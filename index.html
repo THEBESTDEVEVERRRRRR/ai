@@ -132,8 +132,9 @@
     <div class="model-select-container">
         <div class="relative inline-block text-left">
             <select id="modelSelect" class="bg-gray-700 text-white px-4 py-2 rounded-full focus:outline-none appearance-none pr-8">
-                <option value="deepseek-r1-distill-qwen-32b" selected>TushAI T1.0 Reasoning BETA</option>
-                <option value="qwen-qwq-32b">TushAI T1.0 BETA</option>
+                <option value="qwen-qwq-32b" selected>TushAI T1.0 Reasoning BETA</option>
+                <option value="deepseek-r1-distill-qwen-32b" selected>TushAI TLV Reasoning BETA</option>
+                <option value="qwen-2.5-32b">TushAI T1.0 BETA</option>
             </select>
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -165,7 +166,7 @@
     </div>
     </div>
     <footer class="text-gray-500 text-sm">
-        TushAI is currently in Beta. TushAI might display inaccurate or offensive information. Please only use as reference.
+        TushAI is currently in Beta. TushAI might display inaccurate or offensive information. Please use answers only as reference.
     </footer>
 
 <script>
@@ -179,7 +180,7 @@
     const modelSelect = document.getElementById('modelSelect');
     const newChatButton = document.getElementById('newChatButton');
 
-    let currentModel = 'deepseek-r1-distill-qwen-32b';
+    let currentModel = 'qwen-qwq-32b';
 
     // Set initial selected option
     modelSelect.value = currentModel;
@@ -236,7 +237,7 @@
     }
 
     function addMessage(content, isUser = false, isThought = false) {
-        if (isThought && currentModel === 'deepseek-r1-distill-qwen-32b') {
+        if (isThought && currentModel === 'deepseek-r1-distill-qwen-32b' || 'qwen-qwq-32b') {
             const thoughtElement = document.createElement('div');
             thoughtElement.classList.add('thought-message', 'thought-dropdown');
             thoughtElement.innerHTML = `
@@ -277,7 +278,7 @@
     }
 
     function parseResponse(content) {
-        if (currentModel === 'deepseek-r1-distill-qwen-32b') {
+        if (currentModel === 'deepseek-r1-distill-qwen-32b' || 'qwen-qwq-32b') {
             const thinkRegex = /<think>([\s\S]*?)<\/think>/;
             const thinkMatch = content.match(thinkRegex);
 
@@ -312,7 +313,7 @@
                 body: JSON.stringify({
                     model: currentModel,
                     messages: [
-                        { role: 'system', content: currentModel === 'deepseek-r1-distill-qwen-32b' ? 
+                        { role: 'system', content: currentModel === 'deepseek-r1-distill-qwen-32b' || 'qwen-qwq-32b'? 
                             'You are a helpful assistant. Use Markdown formatting in your responses. Wrap your thinking process in <think> tags.' : 
                             'You are a helpful assistant. Use Markdown formatting in your responses.' },
                         { role: 'user', content: userMessage }
