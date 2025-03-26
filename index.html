@@ -346,7 +346,7 @@
     let currentModel = 'qwen-qwq-32b';
 
     function updateSelectedModel() {
-        selectedModelText.textContent = currentModel === 'qwen-qwq-32b' ? 'qwen qwq 32b' : 'qwen 2.5 32b';
+        selectedModelText.textContent = currentModel === 'qwen-qwq-32b' ? 'TushAI T1 Reasoning Beta' : 'TushAI T1 Beta';
         modelOptions.forEach(option => {
             const checkIcon = option.querySelector('.fa-check');
             if (option.dataset.value === currentModel) {
