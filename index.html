@@ -25,25 +25,42 @@
         }
         .typing-animation::after {
             content: '▋';
-            animation: blink 1s step-start infinite;
+            display: inline-block;
+            vertical-align: bottom;
+            animation: blink 0.7s step-start infinite;
         }
 
         @keyframes blink {
             50% { opacity: 0; }
-        }
-                .model-select-container {
-                    position: absolute;
-                    top: 1rem;
-                    left: 1rem;
-                }
+            }
+            .model-select-container {
+                position: relative;
+                z-index: 50;
+            }
+            .copy-button {
+                position: absolute;
+                bottom: 0.5rem;
+                right: 0.5rem;
+                background-color: rgba(74, 85, 104, 0.5);
+                color: #a0aec0;
+                border: none;
+                border-radius: 0.25rem;
+                padding: 0.25rem 0.5rem;
+                font-size: 0.875rem;
+                cursor: pointer;
+                transition: opacity 0.2s, color 0.2s, background-color 0.2s;
+                opacity: 0;
+            }
 
-                @media (max-width: 640px) {
-                    .model-select-container {
-                        position: static;
-                        margin-bottom: 1rem;
-                    }
-                }
-             .model-select{
+            .assistant-message:hover .copy-button {
+                opacity: 1;
+            }
+
+            .copy-button:hover {
+                background-color: rgba(74, 85, 104, 0.8);
+                color: #ffffff;
+            }
+            .model-select{
                 background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
                 background-position: right 0.5rem center;
                 background-repeat: no-repeat;
@@ -66,9 +83,11 @@
             align-self: flex-end;
         }
         .assistant-message {
+            position: relative;
             background-color: #2d3748;
             border-radius: 1rem;
             padding: 0.5rem 1rem;
+            padding-bottom: 2rem; /* Add space for the copy button */
             margin-bottom: 0.5rem;
             align-self: flex-start;
         }
@@ -103,50 +122,191 @@
         .model-select option[value="qwen-qwq-32b"] {
         outline: 2px solid red;
         background-color: rgba(255, 0, 0, 0.1);
-    }
-    .new-chat-container {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
+    .fixed.top-4.left-4.right-4 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background-color: #1a202c;
+        border-bottom: 1px solid #2d3748;
     }
 
-    @media (max-width: 640px) {
-        .new-chat-container {
-            position: static;
-            margin-bottom: 1rem;
-            text-align: right;
-        }
+    .model-select-container {
+        position: relative;
+        z-index: 50;
+    }
+
+    #modelSelectButton {
+        width: 250px;
+        background-color: #2d3748;
+        border: 1px solid #4a5568;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #modelDropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 250px;
+        background-color: #2d3748;
+        border: 1px solid #4a5568;
+        border-top: none;
+        border-radius: 0 0 0.375rem 0.375rem;
+    }
+
+    .model-option {
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+    }
+
+    .model-option:hover {
+        background-color: #4a5568;
     }
     #newChatButton {
-        display: inline-flex;
+        display: flex;
         align-items: center;
         justify-content: center;
+        width: 40px;
+        height: 40px;
+        background-color: #2d3748;
+        border: 1px solid #4a5568;
+        border-radius: 0.375rem;
     }
 
-    #newChatButton i {
-        font-size: 0.875rem; /* Adjust as needed */
+    #newChatButton:hover {
+        background-color: #4a5568;
+    }
+
+    #newChatButton svg {
+        width: 24px;
+        height: 24px;
+    }
+    @media (max-width: 640px) {
+        .fixed.top-4.left-4.right-4 {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .model-select-container {
+            margin-bottom: 0.5rem;
+        }
+
+        #modelSelectButton {
+            width: 100%;
+        }
+
+        #newChatButton {
+            align-self: flex-end;
+        }
+    }
+        }
+
+    #newChatButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background-color: #2d3748;
+        border: 1px solid #4a5568;
+        border-radius: 0.375rem;
+    }
+
+    #newChatButton:hover {
+        background-color: #4a5568;
+    }
+
+    #newChatButton svg {
+        width: 24px;
+        height: 24px;
+    }
+    #modelSelectButton {
+        width: 250px;
+        background-color: #2d3748;
+        border: 1px solid #4a5568;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #modelDropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 250px;
+        background-color: #2d3748;
+        border: 1px solid #4a5568;
+        border-top: none;
+        border-radius: 0 0 0.375rem 0.375rem;
+        margin-top: 0.25rem;
+    }
+
+    .model-option {
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+    }
+
+    .model-option:hover {
+        background-color: #4a5568;
+    }
+    @media (max-width: 640px) {
+        .fixed.top-4.left-4.right-4 {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .model-select-container {
+            margin-bottom: 0.5rem;
+        }
+
+        #modelSelectButton {
+            width: 100%;
+        }
+
+        #newChatButton {
+            align-self: flex-end;
+        }
     }
     </style>
 </head>
 <body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
-    <div class="model-select-container">
-        <div class="relative inline-block text-left">
-            <select id="modelSelect" class="bg-gray-700 text-white px-4 py-2 rounded-full focus:outline-none appearance-none pr-8">
-                <option value="qwen-qwq-32b" selected>TushAI T1.0 Reasoning BETA</option>
-                <option value="qwen-2.5-32b">TushAI T1.0 BETA</option>
-            </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
-                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+    <div class="fixed top-4 left-4 right-4 flex items-center justify-between">
+        <div class="model-select-container">
+            <button type="button" id="modelSelectButton" class="focus:outline-none">
+                <span id="selectedModelText">qwen qwq 32b</span>
+                <svg class="fill-current h-4 w-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                     <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
                 </svg>
+            </button>
+            <div id="modelDropdown" class="hidden">
+                <button class="model-option text-white block w-full text-left" data-value="qwen-qwq-32b">
+                    <div class="flex items-center">
+                        <span class="flex-grow">qwen qwq 32b</span>
+                        <i class="fas fa-check ml-2 hidden"></i>
+                    </div>
+                    <p class="text-gray-400 text-xs mt-1">Advanced reasoning model with thought process</p>
+                </button>
+                <button class="model-option text-white block w-full text-left" data-value="qwen-2.5-32b">
+                    <div class="flex items-center">
+                        <span class="flex-grow">qwen 2.5 32b</span>
+                        <i class="fas fa-check ml-2 hidden"></i>
+                    </div>
+                    <p class="text-gray-400 text-xs mt-1">Standard model without thought process</p>
+                </button>
             </div>
         </div>
-    </div>
-
-    <div class="new-chat-container" style="display: none;">
-        <button id="newChatButton" class="bg-gray-700 text-white px-4 py-2 rounded-full hover:bg-gray-600 transition-colors flex items-center">
-            <i class="fas fa-plus mr-2"></i>
-            <span>New Chat</span>
+        <button id="newChatButton" class="text-white hover:bg-gray-600 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
         </button>
     </div>
     <h1 class="text-2xl md:text-4xl font-bold mb-8">What can I help with?</h1>
@@ -179,76 +339,100 @@
     const modelSelect = document.getElementById('modelSelect');
     const newChatButton = document.getElementById('newChatButton');
 
+    const modelSelectButton = document.getElementById('modelSelectButton');
+    const modelDropdown = document.getElementById('modelDropdown');
+    const selectedModelText = document.getElementById('selectedModelText');
+    const modelOptions = document.querySelectorAll('.model-option');
     let currentModel = 'qwen-qwq-32b';
 
-    // Set initial selected option
-    modelSelect.value = currentModel;
-
-    // Function to update option styles
-    function updateOptionStyles() {
-        Array.from(modelSelect.options).forEach(option => {
-            if (option.value === currentModel) {
-                option.style.outline = '2px solid red';
-                option.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+    function updateSelectedModel() {
+        selectedModelText.textContent = currentModel === 'qwen-qwq-32b' ? 'qwen qwq 32b' : 'qwen 2.5 32b';
+        modelOptions.forEach(option => {
+            const checkIcon = option.querySelector('.fa-check');
+            if (option.dataset.value === currentModel) {
+                checkIcon.classList.remove('hidden');
             } else {
-                option.style.outline = 'none';
-                option.style.backgroundColor = 'transparent';
+                checkIcon.classList.add('hidden');
             }
         });
     }
 
-    // Call the function initially
-    updateOptionStyles();
-
-    // Modify the existing change event listener
-    modelSelect.addEventListener('change', (e) => {
-        currentModel = e.target.value;
-        console.log('Model changed to:', currentModel);
-        updateOptionStyles();
+    modelSelectButton.addEventListener('click', () => {
+        modelDropdown.classList.toggle('hidden');
     });
+
+    modelOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            currentModel = option.dataset.value;
+            updateSelectedModel();
+            modelDropdown.classList.add('hidden');
+            console.log('Model changed to:', currentModel);
+        });
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!modelSelectButton.contains(event.target) && !modelDropdown.contains(event.target)) {
+            modelDropdown.classList.add('hidden');
+        }
+    });
+
+    // Initial update
+    updateSelectedModel();
 
     newChatButton.addEventListener('click', () => {
         chatMessages.innerHTML = '';
         chatContainer.style.display = 'none';
         userInput.value = '';
-        document.querySelector('.new-chat-container').style.display = 'none'; // Hide the button
     });
 
     function typeWriter(element, html) {
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = html;
-        const nodes = Array.from(tempDiv.childNodes);
+        const text = tempDiv.textContent;
         let index = 0;
 
-        function addNextNode() {
-            if (index < nodes.length) {
-                const node = nodes[index].cloneNode(true);
-                element.appendChild(node);
+        function addNextChar() {
+            if (index < text.length) {
+                element.textContent += text.charAt(index);
                 index++;
-                setTimeout(addNextNode, 20); // Adjust the timeout for faster/slower typing
+                const delay = Math.random() * 8 + 2; // Random delay between 2ms and 10ms
+                setTimeout(addNextChar, delay);
             } else {
+                element.innerHTML = html; // Set the final HTML with proper formatting
                 element.classList.remove('typing-animation');
+
+                // Remove the blinking cursor
+                const parentMessage = element.closest('.assistant-message');
+                if (parentMessage) {
+                    parentMessage.classList.remove('typing-animation');
+                }
             }
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        addNextNode();
+        element.textContent = ''; // Clear the element before starting
+        addNextChar();
     }
 
     function addMessage(content, isUser = false, isThought = false) {
-        if (isThought && currentModel === 'qwen-qwq-32b') {
-            const thoughtElement = document.createElement('div');
-            thoughtElement.classList.add('thought-message', 'thought-dropdown');
-            thoughtElement.innerHTML = `
+        const messageElement = document.createElement('div');
+        messageElement.classList.add(isUser ? 'user-message' : 'assistant-message');
+
+        if (isUser) {
+            messageElement.textContent = content;
+            chatMessages.appendChild(messageElement);
+        } else if (isThought && currentModel === 'qwen-qwq-32b') {
+            messageElement.classList.add('thought-message', 'thought-dropdown');
+            messageElement.innerHTML = `
                 <div class="flex items-center">
                     <i class="fas fa-chevron-right mr-2"></i>
                     <span>AI's Thought Process</span>
                 </div>
                 <div class="thought-content mt-2"></div>
             `;
-            thoughtElement.querySelector('.flex').addEventListener('click', () => {
-                const thoughtContent = thoughtElement.querySelector('.thought-content');
-                const chevron = thoughtElement.querySelector('.fas');
+            messageElement.querySelector('.flex').addEventListener('click', () => {
+                const thoughtContent = messageElement.querySelector('.thought-content');
+                const chevron = messageElement.querySelector('.fas');
                 if (thoughtContent.style.display === 'none' || thoughtContent.style.display === '') {
                     thoughtContent.style.display = 'block';
                     chevron.classList.replace('fa-chevron-right', 'fa-chevron-down');
@@ -257,23 +441,39 @@
                     chevron.classList.replace('fa-chevron-down', 'fa-chevron-right');
                 }
             });
-            chatMessages.appendChild(thoughtElement);
+            chatMessages.appendChild(messageElement);
             const parsedContent = marked.parse(content);
-            typeWriter(thoughtElement.querySelector('.thought-content'), parsedContent);
-        } else if (!isThought) {
-            const messageElement = document.createElement('div');
-            messageElement.classList.add(isUser ? 'user-message' : 'assistant-message');
-            if (isUser) {
-                messageElement.textContent = content;
-                chatMessages.appendChild(messageElement);
-            } else {
-                messageElement.classList.add('typing-animation');
-                chatMessages.appendChild(messageElement);
-                const parsedContent = marked.parse(content);
-                typeWriter(messageElement, parsedContent);
-            }
+            typeWriter(messageElement.querySelector('.thought-content'), parsedContent);
+        } else {
+            messageElement.classList.add('typing-animation');
+            const contentWrapper = document.createElement('div');
+            contentWrapper.classList.add('message-content');
+            messageElement.appendChild(contentWrapper);
+            const copyButton = document.createElement('button');
+            copyButton.innerHTML = '<i class="fas fa-copy"></i>';
+            copyButton.classList.add('copy-button');
+            copyButton.setAttribute('title', 'Copy to clipboard');
+            copyButton.addEventListener('click', () => copyToClipboard(content));
+            messageElement.appendChild(copyButton);
+
+            chatMessages.appendChild(messageElement);
+            typeWriter(contentWrapper, marked.parse(content));
         }
         chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            // Change the icon to a checkmark briefly
+            const copyButton = document.querySelector('.copy-button');
+            const originalIcon = copyButton.innerHTML;
+            copyButton.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => {
+                copyButton.innerHTML = originalIcon;
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
     }
 
     function parseResponse(content) {
@@ -297,11 +497,17 @@
         if (chatContainer.style.display === 'none') {
             chatContainer.style.display = 'flex';
             chatContainer.classList.remove('rounded-t-lg', 'mb-4');
-            showNewChatButton(); // Show the New Chat button after the first message
+            // Remove this line as we don't need to show/hide the new chat button anymore
+            // showNewChatButton();
         }
         addMessage(userMessage, true);
         userInput.value = '';
 
+        // Show typing indicator
+        const typingIndicator = document.createElement('div');
+        typingIndicator.classList.add('assistant-message', 'typing-indicator');
+        typingIndicator.textContent = 'AI is typing...';
+        chatMessages.appendChild(typingIndicator);
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -327,10 +533,14 @@
                 throw new Error(`API error: ${data.error?.message || 'Unknown error'}`);
             }
 
+            // Remove typing indicator
+            typingIndicator.remove();
             if (data.choices && data.choices.length > 0 && data.choices[0].message) {
                 const { thought, answer } = parseResponse(data.choices[0].message.content);
                 if (thought) {
                     addMessage(thought, false, true);
+                    // Wait for a short time to simulate thinking
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                 }
                 addMessage(answer);
             } else {
@@ -338,6 +548,8 @@
             }
         } catch (error) {
             console.error('Error:', error);
+            // Remove typing indicator in case of error
+            typingIndicator.remove();
             addMessage(`Error: ${error.message}. Please try again.`);
         }
     });
@@ -347,8 +559,9 @@
             submitButton.click();
         }
     });
-function showNewChatButton() {
-    document.querySelector('.new-chat-container').style.display = 'block';
-}
+// Remove this function as it's no longer needed
+// function showNewChatButton() {
+//     document.querySelector('.new-chat-container').style.display = 'block';
+// }
 </script>
 </html>
