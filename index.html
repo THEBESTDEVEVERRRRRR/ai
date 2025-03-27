@@ -17,6 +17,46 @@
     <style>
         body {
             font-family: "Inter", serif;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        body.sidebar-open {
+            margin-left: 16rem; /* 256px, which is the width of the sidebar */
+        }
+
+        .content-wrapper {
+            transition: margin-left 0.3s ease-in-out;
+            width: 100%;
+        }
+
+        body.sidebar-open .content-wrapper {
+            margin-left: 16rem;
+        }
+
+        .fixed.top-4.left-16.right-4 {
+            transition: left 0.3s ease-in-out;
+        }
+
+        body.sidebar-open .fixed.top-4.left-16.right-4 {
+            left: 17rem;
+        }
+
+        #sidebarToggle {
+            transition: left 0.3s ease-in-out;
+        }
+
+        body.sidebar-open #sidebarToggle {
+            left: 17rem;
+        }
+
+        @media (max-width: 768px) {
+            body.sidebar-open,
+            body.sidebar-open .content-wrapper,
+            body.sidebar-open .fixed.top-4.left-16.right-4,
+            body.sidebar-open #sidebarToggle {
+                margin-left: 0;
+                left: 16rem;
+            }
         }
         .chat-container {
             display: flex;
@@ -28,6 +68,43 @@
             border-radius: 1rem;
             margin-bottom: 1rem;
             background-color: #1a202c; /* Dark background color */
+        }
+        #sidebar {
+            z-index: 40;
+        }
+        #sidebarToggle {
+            z-index: 50;
+            transition: left 0.3s ease-in-out;
+        }
+
+        body.sidebar-open #sidebarToggle {
+            left: 17rem; /* 16rem (sidebar width) + 1rem (padding) */
+        }
+        #sidebar h2 {
+            text-align: right;
+            padding-right: 0.5rem;
+        }
+        .chat-title {
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s;
+        }
+        .chat-title:hover {
+            background-color: #4a5568;
+        }
+        .chat-title.active {
+            background-color: #4a5568;
+            font-weight: bold;
+        }
+        @media (min-width: 768px) {
+            .content-wrapper {
+                transition: margin-left 0.3s ease-in-out;
+            }
+
+            body.sidebar-open .content-wrapper {
+                margin-left: 16rem;
+            }
         }
         .input-container {
             display: flex;
@@ -328,8 +405,13 @@
         overflow-y: hidden;
     }
 
-    .katex {
-        font-size: 1.1em;
+    .remove-chat-btn {
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .chat-title:hover .remove-chat-btn {
+        opacity: 1;
     }
 
     /* Scrollbar styles */
@@ -359,56 +441,69 @@
     </style>
 </head>
 <body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
-    <div class="fixed top-4 left-4 right-4 flex items-center justify-between">
-        <div class="flex items-center">
-        <img src="https://i.ibb.co.com/C3q0RJL4/Screenshot-2025-03-27-160801-removebg-preview-removebg-preview.png" alt="TushAI Logo" class="h-10 mr-4">
-        <div class="model-select-container">
-            <button type="button" id="modelSelectButton" class="focus:outline-none">
-                <span id="selectedModelText">TushAI T1 Reasoning</span>
-                <svg class="fill-current h-4 w-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                </svg>
-            </button>
-            <div id="modelDropdown" class="hidden">
-                <button class="model-option text-white block w-full text-left" data-value="qwen-qwq-32b">
-                    <div class="flex items-center">
-                        <span class="flex-grow">TushAI T1 Reasoning</span>
-                        <i class="fas fa-check ml-2 hidden"></i>
-                    </div>
-                    <p class="text-gray-400 text-xs mt-1">Advanced reasoning model with thought process</p>
-                </button>
-                <button class="model-option text-white block w-full text-left" data-value="qwen-2.5-32b">
-                    <div class="flex items-center">
-                        <span class="flex-grow">TushAI T1</span>
-                        <i class="fas fa-check ml-2 hidden"></i>
-                    </div>
-                    <p class="text-gray-400 text-xs mt-1">Standard model without thought process</p>
-                </button>
-            </div>
-        </div>
-        </div>
-        <button id="newChatButton" class="text-white hover:bg-gray-600 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+    <div id="sidebar" class="fixed left-0 top-0 bottom-0 w-64 bg-gray-800 p-4 overflow-y-auto transform -translate-x-full transition-transform duration-300 ease-in-out">
+        <h2 class="text-xl font-bold mb-4">Chat History</h2>
+        <ul id="chatHistoryList" class="space-y-2"></ul>
+    </div>
+    <div class="content-wrapper w-full max-w-4xl">
+        <button id="sidebarToggle" class="fixed left-4 top-4 z-50 text-white hover:text-gray-300 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
             </svg>
         </button>
-    </div>
-    <h1 class="text-2xl md:text-4xl font-bold mb-8">What can I help with?</h1>
-    <!-- Rest of the body content -->
-</body>
-    <div class="w-full max-w-2xl mb-8 flex flex-col">
-        <div id="chatContainer" class="chat-container rounded-t-lg mb-4" style="display: none;">
-            <div id="chatMessages" class="chat-messages"></div>
-        </div>
-        <div class="input-container">
-            <input type="text" id="userInput" placeholder="Ask anything">
-            <button id="submitButton">
-                <i class="fas fa-arrow-right"></i>
+        <div class="fixed top-4 left-16 right-4 flex items-center justify-between transition-all duration-300 ease-in-out">
+            <div class="flex items-center">
+                <img src="https://i.ibb.co.com/C3q0RJL4/Screenshot-2025-03-27-160801-removebg-preview-removebg-preview.png" alt="TushAI Logo" class="h-10 mr-4">
+                <div class="model-select-container">
+                    <button type="button" id="modelSelectButton" class="focus:outline-none">
+                        <span id="selectedModelText">TushAI T1 Reasoning</span>
+                        <svg class="fill-current h-4 w-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                        </svg>
+                    </button>
+                    <div id="modelDropdown" class="hidden">
+                        <button class="model-option text-white block w-full text-left" data-value="qwen-qwq-32b">
+                            <div class="flex items-center">
+                                <span class="flex-grow">TushAI T1 Reasoning</span>
+                                <i class="fas fa-check ml-2 hidden"></i>
+                            </div>
+                            <p class="text-gray-400 text-xs mt-1">Advanced reasoning model with thought process</p>
+                        </button>
+                        <button class="model-option text-white block w-full text-left" data-value="qwen-2.5-32b">
+                            <div class="flex items-center">
+                                <span class="flex-grow">TushAI T1</span>
+                                <i class="fas fa-check ml-2 hidden"></i>
+                            </div>
+                            <p class="text-gray-400 text-xs mt-1">Standard model without thought process</p>
+                        </button>
+                    </div>
+                    </div>
+            </div>
+            <button id="newChatButton" class="text-white hover:bg-gray-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
             </button>
         </div>
+        <div class="mt-20 flex flex-col items-center justify-center w-full">
+            <h1 class="text-2xl md:text-4xl font-bold mb-8">What can I help with?</h1>
+            <div class="w-full max-w-2xl mb-8 flex flex-col">
+                <div id="chatContainer" class="chat-container rounded-t-lg mb-4" style="display: none;">
+                    <div id="chatMessages" class="chat-messages"></div>
+                </div>
+                <div class="input-container">
+                    <input type="text" id="userInput" placeholder="Ask anything">
+                    <button id="submitButton">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
+    <footer class="text-center text-sm text-gray-500 mt-8 fixed bottom-4 left-0 right-0">
         TushAI is currently in Beta. TushAI might display inaccurate or offensive information. Please use information only as reference.
     </footer>
+</body>
 
 
 <script>
@@ -435,7 +530,86 @@ if (typeof katex === 'undefined') {
     const selectedModelText = document.getElementById('selectedModelText');
     const modelOptions = document.querySelectorAll('.model-option');
     let currentModel = 'qwen-qwq-32b';
+    let chatHistory = [];
+    let currentChatId = null;
 
+    function generateUniqueId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    }
+
+    function saveChatHistory() {
+        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+    }
+
+    function loadChatHistory() {
+        const savedHistory = localStorage.getItem('chatHistory');
+        if (savedHistory) {
+            chatHistory = JSON.parse(savedHistory);
+            updateChatHistoryList();
+        }
+    }
+    function updateChatHistoryList() {
+        const chatHistoryList = document.getElementById('chatHistoryList');
+        chatHistoryList.innerHTML = '';
+        chatHistory.forEach((chat) => {
+            const li = document.createElement('li');
+            li.classList.add('chat-title', 'flex', 'justify-between', 'items-center', 'py-2', 'px-3', 'hover:bg-gray-700', 'rounded');
+            li.innerHTML = `
+                <span class="cursor-pointer flex-grow">${chat.title}</span>
+                <button class="remove-chat-btn text-red-500 hover:text-red-700" title="Remove chat">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            `;
+            li.dataset.chatId = chat.id;
+            if (chat.id === currentChatId) {
+                li.classList.add('bg-gray-700');
+            }
+            li.querySelector('span').addEventListener('click', () => loadChat(chat.id));
+            li.querySelector('.remove-chat-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                removeChat(chat.id);
+            });
+            chatHistoryList.appendChild(li);
+        });
+    }
+
+
+    function createNewChat() {
+        currentChatId = generateUniqueId();
+        chatHistory.unshift({
+            id: currentChatId,
+            title: 'New Chat',
+            messages: []
+        });
+        saveChatHistory();
+        updateChatHistoryList();
+        chatMessages.innerHTML = '';
+        chatContainer.style.display = 'none';
+        userInput.value = '';
+    }
+
+    function loadChat(chatId) {
+        currentChatId = chatId;
+        const chat = chatHistory.find(c => c.id === chatId);
+        if (chat) {
+            chatMessages.innerHTML = '';
+            chat.messages.forEach(msg => addMessage(msg.content, msg.isUser, msg.isThought));
+            chatContainer.style.display = 'flex';
+            updateChatHistoryList();
+        }
+    }
+
+    function addMessageToHistory(content, isUser, isThought) {
+        const currentChat = chatHistory.find(c => c.id === currentChatId);
+        if (currentChat) {
+            currentChat.messages.push({ content, isUser, isThought });
+            if (currentChat.messages.length === 1 && isUser) {
+                currentChat.title = content.substring(0, 30) + (content.length > 30 ? '...' : '');
+            }
+            saveChatHistory();
+            updateChatHistoryList();
+        }
+    }
     function updateSelectedModel() {
         selectedModelText.textContent = currentModel === 'qwen-qwq-32b' ? 'TushAI T1 Reasoning' : 'TushAI T1';
         modelOptions.forEach(option => {
@@ -470,12 +644,15 @@ if (typeof katex === 'undefined') {
     // Initial update
     updateSelectedModel();
 
-    newChatButton.addEventListener('click', () => {
-        chatMessages.innerHTML = '';
-        chatContainer.style.display = 'none';
-        userInput.value = '';
-    });
+    newChatButton.addEventListener('click', createNewChat);
 
+    // Load chat history when the page loads
+    loadChatHistory();
+
+    // If there's no current chat, create a new one
+    if (chatHistory.length === 0) {
+        createNewChat();
+    }
     function typeWriter(element, html) {
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = html;
@@ -572,6 +749,9 @@ if (typeof katex === 'undefined') {
             typeWriter(contentWrapper, marked.parse(content));
         }
         chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Add message to history
+        addMessageToHistory(content, isUser, isThought);
     }
 
     function copyToClipboard(text) {
@@ -606,11 +786,12 @@ if (typeof katex === 'undefined') {
         const userMessage = userInput.value.trim();
         if (!userMessage) return;
 
+        if (!currentChatId) {
+            createNewChat();
+        }
         if (chatContainer.style.display === 'none') {
             chatContainer.style.display = 'flex';
             chatContainer.classList.remove('rounded-t-lg', 'mb-4');
-            // Remove this line as we don't need to show/hide the new chat button anymore
-            // showNewChatButton();
         }
         addMessage(userMessage, true);
         userInput.value = '';
@@ -685,9 +866,35 @@ function cleanupLatex(text) {
 
     return text;
 }
-// Remove this function as it's no longer needed
-// function showNewChatButton() {
-//     document.querySelector('.new-chat-container').style.display = 'block';
-// }
+// Add event listeners for sidebar toggle and new chat button
+document.getElementById('sidebarToggle').addEventListener('click', () => {
+    const sidebar = document.getElementById('sidebar');
+    const body = document.body;
+    sidebar.classList.toggle('-translate-x-full');
+    body.classList.toggle('sidebar-open');
+});
+
+newChatButton.addEventListener('click', createNewChat);
+
+function removeChat(chatId) {
+    chatHistory = chatHistory.filter(chat => chat.id !== chatId);
+    saveChatHistory();
+    updateChatHistoryList();
+    if (chatId === currentChatId) {
+        if (chatHistory.length > 0) {
+            loadChat(chatHistory[0].id);
+        } else {
+            createNewChat();
+        }
+    }
+}
+
+// Load chat history when the page loads
+loadChatHistory();
+
+// If there's no current chat, create a new one
+if (chatHistory.length === 0) {
+    createNewChat();
+}
 </script>
 </html>
