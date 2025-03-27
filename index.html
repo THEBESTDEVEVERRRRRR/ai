@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tush AI</title>
+    <link rel="icon" href="https://i.ibb.co.com/TM7MNRvb/Screenshot-2025-03-27-162757-removebg-preview-removebg-preview.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -359,9 +360,11 @@
 </head>
 <body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
     <div class="fixed top-4 left-4 right-4 flex items-center justify-between">
+        <div class="flex items-center">
+        <img src="https://i.ibb.co.com/C3q0RJL4/Screenshot-2025-03-27-160801-removebg-preview-removebg-preview.png" alt="TushAI Logo" class="h-10 mr-4">
         <div class="model-select-container">
             <button type="button" id="modelSelectButton" class="focus:outline-none">
-                <span id="selectedModelText">TushAI T1 Reasoning Beta</span>
+                <span id="selectedModelText">TushAI T1 Reasoning</span>
                 <svg class="fill-current h-4 w-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                     <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
                 </svg>
@@ -369,19 +372,20 @@
             <div id="modelDropdown" class="hidden">
                 <button class="model-option text-white block w-full text-left" data-value="qwen-qwq-32b">
                     <div class="flex items-center">
-                        <span class="flex-grow">TushAI T1 Reasoning Beta</span>
+                        <span class="flex-grow">TushAI T1 Reasoning</span>
                         <i class="fas fa-check ml-2 hidden"></i>
                     </div>
                     <p class="text-gray-400 text-xs mt-1">Advanced reasoning model with thought process</p>
                 </button>
                 <button class="model-option text-white block w-full text-left" data-value="qwen-2.5-32b">
                     <div class="flex items-center">
-                        <span class="flex-grow">TushAI T1 Beta</span>
+                        <span class="flex-grow">TushAI T1</span>
                         <i class="fas fa-check ml-2 hidden"></i>
                     </div>
                     <p class="text-gray-400 text-xs mt-1">Standard model without thought process</p>
                 </button>
             </div>
+        </div>
         </div>
         <button id="newChatButton" class="text-white hover:bg-gray-600 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -433,7 +437,7 @@ if (typeof katex === 'undefined') {
     let currentModel = 'qwen-qwq-32b';
 
     function updateSelectedModel() {
-        selectedModelText.textContent = currentModel === 'qwen-qwq-32b' ? 'TushAI T1 Reasoning Beta' : 'TushAI T1 Beta';
+        selectedModelText.textContent = currentModel === 'qwen-qwq-32b' ? 'TushAI T1 Reasoning' : 'TushAI T1';
         modelOptions.forEach(option => {
             const checkIcon = option.querySelector('.fa-check');
             if (option.dataset.value === currentModel) {
