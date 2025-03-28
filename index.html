@@ -476,6 +476,13 @@
                             </div>
                             <p class="text-gray-400 text-xs mt-1">Standard model without thought process</p>
                         </button>
+                        <button class="model-option text-white block w-full text-left" data-value="qwen-2.5-coder-32b">
+                            <div class="flex items-center">
+                                <span class="flex-grow">TushAI T1 Coder</span>
+                                <i class="fas fa-check ml-2 hidden"></i>
+                            </div>
+                            <p class="text-gray-400 text-xs mt-1">Specialized model for coding tasks</p>
+                        </button>
                     </div>
                     </div>
             </div>
@@ -500,7 +507,7 @@
             </div>
         </div>
     </div>
-    <footer class="text-center text-sm text-gray-500 mt-8 fixed bottom-4 left-0 right-0">
+    <footer  class="text-center text-sm text-gray-500 mt-8 bottom-4 left-0 right-0">
         TushAI is currently in Beta. TushAI might display inaccurate or offensive information. Please use information only as reference.
         <br>
         TushAI chats are private, and are never saved or used to train AI models. All chat data is stored locally.
@@ -577,7 +584,6 @@ if (typeof katex === 'undefined') {
         });
     }
 
-
     function createNewChat() {
         currentChatId = generateUniqueId();
         chatHistory.unshift({
@@ -587,21 +593,25 @@ if (typeof katex === 'undefined') {
         });
         saveChatHistory();
         updateChatHistoryList();
-        chatMessages.innerHTML = '';
+        chatMessages.innerHTML = ''; // Clear existing messages
         chatContainer.style.display = 'none';
         userInput.value = '';
     }
-
     function loadChat(chatId) {
         currentChatId = chatId;
         const chat = chatHistory.find(c => c.id === chatId);
         if (chat) {
-            chatMessages.innerHTML = '';
-            chat.messages.forEach(msg => addMessage(msg.content, msg.isUser, msg.isThought));
+            chatMessages.innerHTML = ''; // Clear existing messages
             chatContainer.style.display = 'flex';
+            chat.messages.forEach(msg => {
+                addMessage(msg.content, msg.isUser, msg.isThought, false); // Add false parameter to prevent re-adding to history
+            });
+            renderAllLatex(); // Render LaTeX after loading all messages
             updateChatHistoryList();
         }
     }
+
+
 
     function addMessageToHistory(content, isUser, isThought) {
         const currentChat = chatHistory.find(c => c.id === currentChatId);
@@ -615,7 +625,17 @@ if (typeof katex === 'undefined') {
         }
     }
     function updateSelectedModel() {
-        selectedModelText.textContent = currentModel === 'qwen-qwq-32b' ? 'TushAI T1 Reasoning' : 'TushAI T1';
+        switch (currentModel) {
+            case 'qwen-qwq-32b':
+                selectedModelText.textContent = 'TushAI T1 Reasoning';
+                break;
+            case 'qwen-2.5-32b':
+                selectedModelText.textContent = 'TushAI T1';
+                break;
+            case 'qwen-2.5-coder-32b':
+                selectedModelText.textContent = 'TushAI T1 Coder';
+                break;
+        }
         modelOptions.forEach(option => {
             const checkIcon = option.querySelector('.fa-check');
             if (option.dataset.value === currentModel) {
@@ -707,7 +727,7 @@ if (typeof katex === 'undefined') {
         addNextChar();
     }
 
-    function addMessage(content, isUser = false, isThought = false) {
+    function addMessage(content, isUser = false, isThought = false, addToHistory = true) {
         const messageElement = document.createElement('div');
         messageElement.classList.add(isUser ? 'user-message' : 'assistant-message');
 
@@ -736,9 +756,8 @@ if (typeof katex === 'undefined') {
             });
             chatMessages.appendChild(messageElement);
             const parsedContent = marked.parse(content);
-            typeWriter(messageElement.querySelector('.thought-content'), parsedContent);
+            messageElement.querySelector('.thought-content').innerHTML = parsedContent;
         } else {
-            messageElement.classList.add('typing-animation');
             const contentWrapper = document.createElement('div');
             contentWrapper.classList.add('message-content');
             messageElement.appendChild(contentWrapper);
@@ -750,13 +769,19 @@ if (typeof katex === 'undefined') {
             messageElement.appendChild(copyButton);
 
             chatMessages.appendChild(messageElement);
-            typeWriter(contentWrapper, marked.parse(content));
+            contentWrapper.innerHTML = marked.parse(content);
         }
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
-        // Add message to history
-        addMessageToHistory(content, isUser, isThought);
+        // Add message to history only if addToHistory is true
+        if (addToHistory) {
+            addMessageToHistory(content, isUser, isThought);
+        }
+
+        // Render LaTeX for the newly added message
+        renderLatex(messageElement);
     }
+
 
     function copyToClipboard(text) {
         navigator.clipboard.writeText(text).then(() => {
@@ -786,6 +811,18 @@ if (typeof katex === 'undefined') {
         return { thought: '', answer: content };
     }
 
+    function getSystemPrompt(model) {
+        switch (model) {
+            case 'qwen-qwq-32b':
+                return 'You are a helpful assistant. Use Markdown formatting in your responses. Wrap your thinking process in <think> tags. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
+            case 'qwen-2.5-32b':
+                return 'You are a helpful assistant. Use Markdown formatting in your responses. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
+            case 'qwen-2.5-coder-32b':
+                return 'You are a helpful coding assistant. Provide clear and concise code explanations and solutions. Use Markdown formatting for code blocks and syntax highlighting. For any mathematical expressions, use KaTeX-compatible syntax with $...$ for inline math and $...$ for display math.';
+            default:
+                return 'You are a helpful assistant.';
+        }
+    }
     submitButton.addEventListener('click', async () => {
         const userMessage = userInput.value.trim();
         if (!userMessage) return;
@@ -815,9 +852,7 @@ if (typeof katex === 'undefined') {
                 body: JSON.stringify({
                     model: currentModel,
                     messages: [
-                        { role: 'system', content: currentModel === 'qwen-qwq-32b' ? 
-                            'You are a helpful assistant. Use Markdown formatting in your responses. Wrap your thinking process in <think> tags. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $$...$$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $$...$$ for multi-line equations.' : 
-                            'You are a helpful assistant. Use Markdown formatting in your responses. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $$...$$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $$...$$ for multi-line equations.' },
+                        { role: 'system', content: getSystemPrompt(currentModel) },
                         { role: 'user', content: userMessage }
                     ]
                 })
@@ -899,6 +934,30 @@ loadChatHistory();
 // If there's no current chat, create a new one
 if (chatHistory.length === 0) {
     createNewChat();
+}
+function renderLatex(element) {
+    if (typeof renderMathInElement === 'function') {
+        renderMathInElement(element, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false},
+                {left: "\\(", right: "\\)", display: false},
+                {left: "\\[", right: "\\]", display: true}
+            ],
+            throwOnError: false,
+            errorColor: '#cc0000',
+            strict: 'warn',
+            trust: true,
+            macros: {
+                "\\eqref": "\\href{#1}{}",   // fallback for eqref
+            }
+        });
+    }
+}
+
+function renderAllLatex() {
+    const messages = document.querySelectorAll('.user-message, .assistant-message, .thought-message');
+    messages.forEach(renderLatex);
 }
 </script>
 </html>
