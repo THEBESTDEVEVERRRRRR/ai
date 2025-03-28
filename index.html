@@ -17,7 +17,49 @@
     <style>
         body {
             font-family: "Inter", serif;
+            transition: margin-left 0.3s ease-in-out;
         }
+
+        body.sidebar-open {
+            margin-left: 16rem; /* 256px, which is the width of the sidebar */
+        }
+
+        .content-wrapper {
+            transition: margin-left 0.3s ease-in-out;
+            width: 100%;
+        }
+
+        body.sidebar-open .content-wrapper {
+            margin-left: 16rem;
+        }
+        .content-wrapper {
+            transition: margin-left 0.3s ease-in-out;
+            width: 100%;
+        }
+
+        body.sidebar-open .content-wrapper {
+            margin-left: 16rem;
+        }
+
+        .header-container {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            right: 1rem;
+            z-index: 50;
+            transition: left 0.3s ease-in-out;
+        }
+
+        body.sidebar-open .header-container {
+            left: 17rem;
+        }
+
+        @media (max-width: 640px) {
+            body.sidebar-open .header-container {
+                left: 1rem;
+            }
+        }
+
         .chat-container {
             display: flex;
             flex-direction: column;
@@ -28,6 +70,43 @@
             border-radius: 1rem;
             margin-bottom: 1rem;
             background-color: #1a202c; /* Dark background color */
+        }
+        #sidebar {
+            z-index: 40;
+        }
+        #sidebarToggle {
+            z-index: 50;
+            transition: left 0.3s ease-in-out;
+        }
+
+        body.sidebar-open #sidebarToggle {
+            left: 17rem; /* 16rem (sidebar width) + 1rem (padding) */
+        }
+        #sidebar h2 {
+            text-align: right;
+            padding-right: 0.5rem;
+        }
+        .chat-title {
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s;
+        }
+        .chat-title:hover {
+            background-color: #4a5568;
+        }
+        .chat-title.active {
+            background-color: #4a5568;
+            font-weight: bold;
+        }
+        @media (min-width: 768px) {
+            .content-wrapper {
+                transition: margin-left 0.3s ease-in-out;
+            }
+
+            body.sidebar-open .content-wrapper {
+                margin-left: 16rem;
+            }
         }
         .input-container {
             display: flex;
@@ -49,7 +128,27 @@
         }
 
         #submitButton {
-            background-color: #4299e1;
+            background-color: #3498db;
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+        }
+
+        #submitButton:hover {
+            background-color: #718096;
+        }
+
+        #submitButton i {
+            font-size: 1.25rem;
+        }
+        #stopButton {
+            background-color: #e53e3e;
             color: white;
             padding: 0.75rem;
             border: none;
@@ -60,11 +159,11 @@
             justify-content: center;
         }
 
-        #submitButton:hover {
-            background-color: #3182ce;
+        #stopButton:hover {
+            background-color: #c53030;
         }
 
-        #submitButton i {
+        #stopButton i {
             font-size: 1.25rem;
         }
         .typing-animation::after {
@@ -328,8 +427,13 @@
         overflow-y: hidden;
     }
 
-    .katex {
-        font-size: 1.1em;
+    .remove-chat-btn {
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .chat-title:hover .remove-chat-btn {
+        opacity: 1;
     }
 
     /* Scrollbar styles */
@@ -359,56 +463,92 @@
     </style>
 </head>
 <body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
-    <div class="fixed top-4 left-4 right-4 flex items-center justify-between">
-        <div class="flex items-center">
-        <img src="https://i.ibb.co.com/C3q0RJL4/Screenshot-2025-03-27-160801-removebg-preview-removebg-preview.png" alt="TushAI Logo" class="h-10 mr-4">
-        <div class="model-select-container">
-            <button type="button" id="modelSelectButton" class="focus:outline-none">
-                <span id="selectedModelText">TushAI T1 Reasoning</span>
-                <svg class="fill-current h-4 w-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+    <div id="sidebar" class="fixed left-0 top-0 bottom-0 w-64 bg-gray-800 p-4 overflow-y-auto transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+        <h2 class="text-xl font-bold mb-4">Chat History</h2>
+        <ul id="chatHistoryList" class="space-y-2 flex-grow"></ul>
+        <div class="mt-auto pt-4 border-t border-gray-700">
+            <a href="about-us.html" class="block text-white hover:bg-gray-700 px-3 py-2 rounded mb-2">
+                <i class="fas fa-info-circle mr-2"></i>About Us
+            </a>
+            <a href="contact-us.html" class="block text-white hover:bg-gray-700 px-3 py-2 rounded">
+                <i class="fas fa-envelope mr-2"></i>Contact Us
+            </a>
+        </div>
+    </div>
+    <div class="content-wrapper w-full max-w-4xl">
+        <div class="header-container flex items-center justify-between transition-all duration-300 ease-in-out">
+            <div class="flex items-center">
+                <button id="sidebarToggle" class="text-white hover:text-gray-300 focus:outline-none mr-4 z-50">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                    </svg>
+                </button>
+                <img src="https://i.ibb.co.com/C3q0RJL4/Screenshot-2025-03-27-160801-removebg-preview-removebg-preview.png" alt="TushAI Logo" class="h-10 mr-4">
+                <div class="model-select-container">
+                    <button type="button" id="modelSelectButton" class="focus:outline-none">
+                        <span id="selectedModelText">TushAI T1 Reasoning</span>
+                        <svg class="fill-current h-4 w-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                        </svg>
+                    </button>
+                    <div id="modelDropdown" class="hidden">
+                        <button class="model-option text-white block w-full text-left" data-value="qwen-qwq-32b">
+                            <div class="flex items-center">
+                                <span class="flex-grow">TushAI T1 Reasoning</span>
+                                <i class="fas fa-check ml-2 hidden"></i>
+                            </div>
+                            <p class="text-gray-400 text-xs mt-1">Advanced reasoning model with thought process</p>
+                        </button>
+                        <button class="model-option text-white block w-full text-left" data-value="qwen-2.5-32b">
+                            <div class="flex items-center">
+                                <span class="flex-grow">TushAI T1</span>
+                                <i class="fas fa-check ml-2 hidden"></i>
+                            </div>
+                            <p class="text-gray-400 text-xs mt-1">Standard model without thought process</p>
+                        </button>
+                        <button class="model-option text-white block w-full text-left" data-value="qwen-2.5-coder-32b">
+                            <div class="flex items-center">
+                                <span class="flex-grow">TushAI T1 Coder</span>
+                                <i class="fas fa-check ml-2 hidden"></i>
+                            </div>
+                            <p class="text-gray-400 text-xs mt-1">Specialized model for coding tasks</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <button id="newChatButton" class="text-white hover:bg-gray-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
             </button>
-            <div id="modelDropdown" class="hidden">
-                <button class="model-option text-white block w-full text-left" data-value="qwen-qwq-32b">
-                    <div class="flex items-center">
-                        <span class="flex-grow">TushAI T1 Reasoning</span>
-                        <i class="fas fa-check ml-2 hidden"></i>
-                    </div>
-                    <p class="text-gray-400 text-xs mt-1">Advanced reasoning model with thought process</p>
-                </button>
-                <button class="model-option text-white block w-full text-left" data-value="qwen-2.5-32b">
-                    <div class="flex items-center">
-                        <span class="flex-grow">TushAI T1</span>
-                        <i class="fas fa-check ml-2 hidden"></i>
-                    </div>
-                    <p class="text-gray-400 text-xs mt-1">Standard model without thought process</p>
-                </button>
+        </div>
+    </div>
+        <div class="mt-20 flex flex-col items-center justify-center w-full">
+            <h1 class="text-2xl md:text-4xl font-bold mb-8">What can I help with?</h1>
+            <div class="w-full max-w-2xl mb-8 flex flex-col">
+                <div id="chatContainer" class="chat-container rounded-t-lg mb-4" style="display: none;">
+                    <div id="chatMessages" class="chat-messages"></div>
+                </div>
+                <div class="input-container">
+                    <input type="text" id="userInput" placeholder="Ask anything">
+                    <button id="submitButton">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button id="stopButton" style="display: none;">
+                        <i class="fas fa-stop"></i>
+                    </button>
+                </div>
             </div>
         </div>
-        </div>
-        <button id="newChatButton" class="text-white hover:bg-gray-600 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-        </button>
     </div>
-    <h1 class="text-2xl md:text-4xl font-bold mb-8">What can I help with?</h1>
-    <!-- Rest of the body content -->
-</body>
-    <div class="w-full max-w-2xl mb-8 flex flex-col">
-        <div id="chatContainer" class="chat-container rounded-t-lg mb-4" style="display: none;">
-            <div id="chatMessages" class="chat-messages"></div>
-        </div>
-        <div class="input-container">
-            <input type="text" id="userInput" placeholder="Ask anything">
-            <button id="submitButton">
-                <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
-    </div>
+    <footer  class="text-center text-sm text-gray-500 mt-8 bottom-4 left-0 right-0">
         TushAI is currently in Beta. TushAI might display inaccurate or offensive information. Please use information only as reference.
+        <br>
+        TushAI chats are private, and are never saved or used to train AI models. All chat data is stored locally.
+        <br>
+        By using TushAI you agree to the <a href="terms-of-service.html" class="underline">Terms of Service</a> and <a href="privacy-policy.html" class="underline">Privacy Policy</a>.
     </footer>
+</body>
 
 
 <script>
@@ -435,9 +575,101 @@ if (typeof katex === 'undefined') {
     const selectedModelText = document.getElementById('selectedModelText');
     const modelOptions = document.querySelectorAll('.model-option');
     let currentModel = 'qwen-qwq-32b';
+    let chatHistory = [];
+    let currentChatId = null;
 
+    function generateUniqueId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    }
+
+    function saveChatHistory() {
+        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+    }
+
+    function loadChatHistory() {
+        const savedHistory = localStorage.getItem('chatHistory');
+        if (savedHistory) {
+            chatHistory = JSON.parse(savedHistory);
+            updateChatHistoryList();
+        }
+    }
+    function updateChatHistoryList() {
+        const chatHistoryList = document.getElementById('chatHistoryList');
+        chatHistoryList.innerHTML = '';
+        chatHistory.forEach((chat) => {
+            const li = document.createElement('li');
+            li.classList.add('chat-title', 'flex', 'justify-between', 'items-center', 'py-2', 'px-3', 'hover:bg-gray-700', 'rounded');
+            li.innerHTML = `
+                <span class="cursor-pointer flex-grow">${chat.title}</span>
+                <button class="remove-chat-btn text-red-500 hover:text-red-700" title="Remove chat">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            `;
+            li.dataset.chatId = chat.id;
+            if (chat.id === currentChatId) {
+                li.classList.add('bg-gray-700');
+            }
+            li.querySelector('span').addEventListener('click', () => loadChat(chat.id));
+            li.querySelector('.remove-chat-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                removeChat(chat.id);
+            });
+            chatHistoryList.appendChild(li);
+        });
+    }
+
+    function createNewChat() {
+        currentChatId = generateUniqueId();
+        chatHistory.unshift({
+            id: currentChatId,
+            title: 'New Chat',
+            messages: []
+        });
+        saveChatHistory();
+        updateChatHistoryList();
+        chatMessages.innerHTML = ''; // Clear existing messages
+        chatContainer.style.display = 'none';
+        userInput.value = '';
+    }
+    function loadChat(chatId) {
+        currentChatId = chatId;
+        const chat = chatHistory.find(c => c.id === chatId);
+        if (chat) {
+            chatMessages.innerHTML = ''; // Clear existing messages
+            chatContainer.style.display = 'flex';
+            chat.messages.forEach(msg => {
+                addMessage(msg.content, msg.isUser, msg.isThought, false, true); // Add true as the last parameter
+            });
+            renderAllLatex(); // Render LaTeX after loading all messages
+            updateChatHistoryList();
+        }
+    }
+
+
+
+    function addMessageToHistory(content, isUser, isThought) {
+        const currentChat = chatHistory.find(c => c.id === currentChatId);
+        if (currentChat) {
+            currentChat.messages.push({ content, isUser, isThought });
+            if (currentChat.messages.length === 1 && isUser) {
+                currentChat.title = content.substring(0, 30) + (content.length > 30 ? '...' : '');
+            }
+            saveChatHistory();
+            updateChatHistoryList();
+        }
+    }
     function updateSelectedModel() {
-        selectedModelText.textContent = currentModel === 'qwen-qwq-32b' ? 'TushAI T1 Reasoning' : 'TushAI T1';
+        switch (currentModel) {
+            case 'qwen-qwq-32b':
+                selectedModelText.textContent = 'TushAI T1 Reasoning';
+                break;
+            case 'qwen-2.5-32b':
+                selectedModelText.textContent = 'TushAI T1';
+                break;
+            case 'qwen-2.5-coder-32b':
+                selectedModelText.textContent = 'TushAI T1 Coder';
+                break;
+        }
         modelOptions.forEach(option => {
             const checkIcon = option.querySelector('.fa-check');
             if (option.dataset.value === currentModel) {
@@ -470,12 +702,15 @@ if (typeof katex === 'undefined') {
     // Initial update
     updateSelectedModel();
 
-    newChatButton.addEventListener('click', () => {
-        chatMessages.innerHTML = '';
-        chatContainer.style.display = 'none';
-        userInput.value = '';
-    });
+    newChatButton.addEventListener('click', createNewChat);
 
+    // Load chat history when the page loads
+    loadChatHistory();
+
+    // If there's no current chat, create a new one
+    if (chatHistory.length === 0) {
+        createNewChat();
+    }
     function typeWriter(element, html) {
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = html;
@@ -526,7 +761,7 @@ if (typeof katex === 'undefined') {
         addNextChar();
     }
 
-    function addMessage(content, isUser = false, isThought = false) {
+    function addMessage(content, isUser = false, isThought = false, addToHistory = true, isOldMessage = false) {
         const messageElement = document.createElement('div');
         messageElement.classList.add(isUser ? 'user-message' : 'assistant-message');
 
@@ -555,9 +790,8 @@ if (typeof katex === 'undefined') {
             });
             chatMessages.appendChild(messageElement);
             const parsedContent = marked.parse(content);
-            typeWriter(messageElement.querySelector('.thought-content'), parsedContent);
+            messageElement.querySelector('.thought-content').innerHTML = parsedContent;
         } else {
-            messageElement.classList.add('typing-animation');
             const contentWrapper = document.createElement('div');
             contentWrapper.classList.add('message-content');
             messageElement.appendChild(contentWrapper);
@@ -569,10 +803,27 @@ if (typeof katex === 'undefined') {
             messageElement.appendChild(copyButton);
 
             chatMessages.appendChild(messageElement);
-            typeWriter(contentWrapper, marked.parse(content));
+
+            if (isOldMessage) {
+                // For old messages, just set the content without animation
+                contentWrapper.innerHTML = marked.parse(content);
+            } else {
+                // For new messages, use the typing animation
+                contentWrapper.classList.add('typing-animation');
+                typeWriter(contentWrapper, marked.parse(content));
+            }
         }
         chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Add message to history only if addToHistory is true
+        if (addToHistory) {
+            addMessageToHistory(content, isUser, isThought);
+        }
+
+        // Render LaTeX for the newly added message
+        renderLatex(messageElement);
     }
+
 
     function copyToClipboard(text) {
         navigator.clipboard.writeText(text).then(() => {
@@ -602,15 +853,34 @@ if (typeof katex === 'undefined') {
         return { thought: '', answer: content };
     }
 
-    submitButton.addEventListener('click', async () => {
+    function getSystemPrompt(model) {
+        switch (model) {
+            case 'qwen-qwq-32b':
+                return 'You are a helpful assistant. Use Markdown formatting in your responses. Wrap your thinking process in <think> tags. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
+            case 'qwen-2.5-32b':
+                return 'You are a helpful assistant. Use Markdown formatting in your responses. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
+            case 'qwen-2.5-coder-32b':
+                return 'You are a helpful coding assistant. Provide clear and concise code explanations and solutions. Use Markdown formatting for code blocks and syntax highlighting. For any mathematical expressions, use KaTeX-compatible syntax with $...$ for inline math and $...$ for display math.';
+            default:
+                return 'You are a helpful assistant.';
+        }
+    }
+    const stopButton = document.getElementById('stopButton');
+    let controller = null;
+
+    submitButton.addEventListener('click', handleSubmit);
+    stopButton.addEventListener('click', handleStop);
+
+    async function handleSubmit() {
         const userMessage = userInput.value.trim();
         if (!userMessage) return;
 
+        if (!currentChatId) {
+            createNewChat();
+        }
         if (chatContainer.style.display === 'none') {
             chatContainer.style.display = 'flex';
             chatContainer.classList.remove('rounded-t-lg', 'mb-4');
-            // Remove this line as we don't need to show/hide the new chat button anymore
-            // showNewChatButton();
         }
         addMessage(userMessage, true);
         userInput.value = '';
@@ -620,7 +890,13 @@ if (typeof katex === 'undefined') {
         typingIndicator.classList.add('assistant-message', 'typing-indicator');
         typingIndicator.textContent = 'AI is typing...';
         chatMessages.appendChild(typingIndicator);
+
+        // Show stop button and hide submit button
+        submitButton.style.display = 'none';
+        stopButton.style.display = 'flex';
         try {
+            controller = new AbortController();
+            const signal = controller.signal;
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
@@ -630,12 +906,11 @@ if (typeof katex === 'undefined') {
                 body: JSON.stringify({
                     model: currentModel,
                     messages: [
-                        { role: 'system', content: currentModel === 'qwen-qwq-32b' ? 
-                            'You are a helpful assistant. Use Markdown formatting in your responses. Wrap your thinking process in <think> tags. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $$...$$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $$...$$ for multi-line equations.' : 
-                            'You are a helpful assistant. Use Markdown formatting in your responses. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $$...$$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $$...$$ for multi-line equations.' },
+                        { role: 'system', content: getSystemPrompt(currentModel) },
                         { role: 'user', content: userMessage }
                     ]
-                })
+                }),
+                signal: signal
             });
 
             const data = await response.json();
@@ -662,13 +937,28 @@ if (typeof katex === 'undefined') {
             console.error('Error:', error);
             // Remove typing indicator in case of error
             typingIndicator.remove();
-            addMessage(`Error: ${error.message}. Please try again.`);
+            if (error.name === 'AbortError') {
+                addMessage('AI response was stopped.');
+            } else {
+                addMessage(`Error: ${error.message}. Please try again.`);
+            }
+        } finally {
+            // Hide stop button and show submit button
+            submitButton.style.display = 'flex';
+            stopButton.style.display = 'none';
+            controller = null;
         }
-    });
+    }
 
+    function handleStop() {
+        if (controller) {
+            controller.abort();
+            controller = null;
+        }
+    }
     userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            submitButton.click();
+        if (e.key === 'Enter' && submitButton.style.display !== 'none') {
+            handleSubmit();
         }
     });
 function cleanupLatex(text) {
@@ -685,9 +975,59 @@ function cleanupLatex(text) {
 
     return text;
 }
-// Remove this function as it's no longer needed
-// function showNewChatButton() {
-//     document.querySelector('.new-chat-container').style.display = 'block';
-// }
+// Add event listeners for sidebar toggle and new chat button
+document.getElementById('sidebarToggle').addEventListener('click', () => {
+    const sidebar = document.getElementById('sidebar');
+    const body = document.body;
+    sidebar.classList.toggle('-translate-x-full');
+    body.classList.toggle('sidebar-open');
+});
+
+newChatButton.addEventListener('click', createNewChat);
+
+function removeChat(chatId) {
+    chatHistory = chatHistory.filter(chat => chat.id !== chatId);
+    saveChatHistory();
+    updateChatHistoryList();
+    if (chatId === currentChatId) {
+        if (chatHistory.length > 0) {
+            loadChat(chatHistory[0].id);
+        } else {
+            createNewChat();
+        }
+    }
+}
+
+// Load chat history when the page loads
+loadChatHistory();
+
+// If there's no current chat, create a new one
+if (chatHistory.length === 0) {
+    createNewChat();
+}
+function renderLatex(element) {
+    if (typeof renderMathInElement === 'function') {
+        renderMathInElement(element, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false},
+                {left: "\\(", right: "\\)", display: false},
+                {left: "\\[", right: "\\]", display: true}
+            ],
+            throwOnError: false,
+            errorColor: '#cc0000',
+            strict: 'warn',
+            trust: true,
+            macros: {
+                "\\eqref": "\\href{#1}{}",   // fallback for eqref
+            }
+        });
+    }
+}
+
+function renderAllLatex() {
+    const messages = document.querySelectorAll('.user-message, .assistant-message, .thought-message');
+    messages.forEach(renderLatex);
+}
 </script>
 </html>
