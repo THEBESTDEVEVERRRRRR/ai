@@ -59,7 +59,7 @@
                 left: 1rem;
             }
         }
-        
+
         .chat-container {
             display: flex;
             flex-direction: column;
@@ -128,7 +128,27 @@
         }
 
         #submitButton {
-            background-color: #4299e1;
+            background-color: #3498db;
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+        }
+
+        #submitButton:hover {
+            background-color: #718096;
+        }
+
+        #submitButton i {
+            font-size: 1.25rem;
+        }
+        #stopButton {
+            background-color: #e53e3e;
             color: white;
             padding: 0.75rem;
             border: none;
@@ -139,11 +159,11 @@
             justify-content: center;
         }
 
-        #submitButton:hover {
-            background-color: #3182ce;
+        #stopButton:hover {
+            background-color: #c53030;
         }
 
-        #submitButton i {
+        #stopButton i {
             font-size: 1.25rem;
         }
         .typing-animation::after {
@@ -443,9 +463,17 @@
     </style>
 </head>
 <body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
-    <div id="sidebar" class="fixed left-0 top-0 bottom-0 w-64 bg-gray-800 p-4 overflow-y-auto transform -translate-x-full transition-transform duration-300 ease-in-out">
+    <div id="sidebar" class="fixed left-0 top-0 bottom-0 w-64 bg-gray-800 p-4 overflow-y-auto transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
         <h2 class="text-xl font-bold mb-4">Chat History</h2>
-        <ul id="chatHistoryList" class="space-y-2"></ul>
+        <ul id="chatHistoryList" class="space-y-2 flex-grow"></ul>
+        <div class="mt-auto pt-4 border-t border-gray-700">
+            <a href="about-us.html" class="block text-white hover:bg-gray-700 px-3 py-2 rounded mb-2">
+                <i class="fas fa-info-circle mr-2"></i>About Us
+            </a>
+            <a href="contact-us.html" class="block text-white hover:bg-gray-700 px-3 py-2 rounded">
+                <i class="fas fa-envelope mr-2"></i>Contact Us
+            </a>
+        </div>
     </div>
     <div class="content-wrapper w-full max-w-4xl">
         <div class="header-container flex items-center justify-between transition-all duration-300 ease-in-out">
@@ -505,6 +533,9 @@
                     <input type="text" id="userInput" placeholder="Ask anything">
                     <button id="submitButton">
                         <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button id="stopButton" style="display: none;">
+                        <i class="fas fa-stop"></i>
                     </button>
                 </div>
             </div>
@@ -607,7 +638,7 @@ if (typeof katex === 'undefined') {
             chatMessages.innerHTML = ''; // Clear existing messages
             chatContainer.style.display = 'flex';
             chat.messages.forEach(msg => {
-                addMessage(msg.content, msg.isUser, msg.isThought, false); // Add false parameter to prevent re-adding to history
+                addMessage(msg.content, msg.isUser, msg.isThought, false, true); // Add true as the last parameter
             });
             renderAllLatex(); // Render LaTeX after loading all messages
             updateChatHistoryList();
@@ -730,7 +761,7 @@ if (typeof katex === 'undefined') {
         addNextChar();
     }
 
-    function addMessage(content, isUser = false, isThought = false, addToHistory = true) {
+    function addMessage(content, isUser = false, isThought = false, addToHistory = true, isOldMessage = false) {
         const messageElement = document.createElement('div');
         messageElement.classList.add(isUser ? 'user-message' : 'assistant-message');
 
@@ -772,7 +803,15 @@ if (typeof katex === 'undefined') {
             messageElement.appendChild(copyButton);
 
             chatMessages.appendChild(messageElement);
-            contentWrapper.innerHTML = marked.parse(content);
+
+            if (isOldMessage) {
+                // For old messages, just set the content without animation
+                contentWrapper.innerHTML = marked.parse(content);
+            } else {
+                // For new messages, use the typing animation
+                contentWrapper.classList.add('typing-animation');
+                typeWriter(contentWrapper, marked.parse(content));
+            }
         }
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -826,7 +865,13 @@ if (typeof katex === 'undefined') {
                 return 'You are a helpful assistant.';
         }
     }
-    submitButton.addEventListener('click', async () => {
+    const stopButton = document.getElementById('stopButton');
+    let controller = null;
+
+    submitButton.addEventListener('click', handleSubmit);
+    stopButton.addEventListener('click', handleStop);
+
+    async function handleSubmit() {
         const userMessage = userInput.value.trim();
         if (!userMessage) return;
 
@@ -845,7 +890,13 @@ if (typeof katex === 'undefined') {
         typingIndicator.classList.add('assistant-message', 'typing-indicator');
         typingIndicator.textContent = 'AI is typing...';
         chatMessages.appendChild(typingIndicator);
+
+        // Show stop button and hide submit button
+        submitButton.style.display = 'none';
+        stopButton.style.display = 'flex';
         try {
+            controller = new AbortController();
+            const signal = controller.signal;
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
@@ -858,7 +909,8 @@ if (typeof katex === 'undefined') {
                         { role: 'system', content: getSystemPrompt(currentModel) },
                         { role: 'user', content: userMessage }
                     ]
-                })
+                }),
+                signal: signal
             });
 
             const data = await response.json();
@@ -885,13 +937,28 @@ if (typeof katex === 'undefined') {
             console.error('Error:', error);
             // Remove typing indicator in case of error
             typingIndicator.remove();
-            addMessage(`Error: ${error.message}. Please try again.`);
+            if (error.name === 'AbortError') {
+                addMessage('AI response was stopped.');
+            } else {
+                addMessage(`Error: ${error.message}. Please try again.`);
+            }
+        } finally {
+            // Hide stop button and show submit button
+            submitButton.style.display = 'flex';
+            stopButton.style.display = 'none';
+            controller = null;
         }
-    });
+    }
 
+    function handleStop() {
+        if (controller) {
+            controller.abort();
+            controller = null;
+        }
+    }
     userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            submitButton.click();
+        if (e.key === 'Enter' && submitButton.style.display !== 'none') {
+            handleSubmit();
         }
     });
 function cleanupLatex(text) {
