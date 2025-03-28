@@ -32,32 +32,34 @@
         body.sidebar-open .content-wrapper {
             margin-left: 16rem;
         }
+        .content-wrapper {
+            transition: margin-left 0.3s ease-in-out;
+            width: 100%;
+        }
 
-        .fixed.top-4.left-16.right-4 {
+        body.sidebar-open .content-wrapper {
+            margin-left: 16rem;
+        }
+
+        .header-container {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            right: 1rem;
+            z-index: 50;
             transition: left 0.3s ease-in-out;
         }
 
-        body.sidebar-open .fixed.top-4.left-16.right-4 {
+        body.sidebar-open .header-container {
             left: 17rem;
         }
 
-        #sidebarToggle {
-            transition: left 0.3s ease-in-out;
-        }
-
-        body.sidebar-open #sidebarToggle {
-            left: 17rem;
-        }
-
-        @media (max-width: 768px) {
-            body.sidebar-open,
-            body.sidebar-open .content-wrapper,
-            body.sidebar-open .fixed.top-4.left-16.right-4,
-            body.sidebar-open #sidebarToggle {
-                margin-left: 0;
-                left: 16rem;
+        @media (max-width: 640px) {
+            body.sidebar-open .header-container {
+                left: 1rem;
             }
         }
+        
         .chat-container {
             display: flex;
             flex-direction: column;
@@ -446,13 +448,13 @@
         <ul id="chatHistoryList" class="space-y-2"></ul>
     </div>
     <div class="content-wrapper w-full max-w-4xl">
-        <button id="sidebarToggle" class="fixed left-4 top-4 z-50 text-white hover:text-gray-300 focus:outline-none">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
-            </svg>
-        </button>
-        <div class="fixed top-4 left-16 right-4 flex items-center justify-between transition-all duration-300 ease-in-out">
+        <div class="header-container flex items-center justify-between transition-all duration-300 ease-in-out">
             <div class="flex items-center">
+                <button id="sidebarToggle" class="text-white hover:text-gray-300 focus:outline-none mr-4 z-50">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                    </svg>
+                </button>
                 <img src="https://i.ibb.co.com/C3q0RJL4/Screenshot-2025-03-27-160801-removebg-preview-removebg-preview.png" alt="TushAI Logo" class="h-10 mr-4">
                 <div class="model-select-container">
                     <button type="button" id="modelSelectButton" class="focus:outline-none">
@@ -462,29 +464,9 @@
                         </svg>
                     </button>
                     <div id="modelDropdown" class="hidden">
-                        <button class="model-option text-white block w-full text-left" data-value="qwen-qwq-32b">
-                            <div class="flex items-center">
-                                <span class="flex-grow">TushAI T1 Reasoning</span>
-                                <i class="fas fa-check ml-2 hidden"></i>
-                            </div>
-                            <p class="text-gray-400 text-xs mt-1">Advanced reasoning model with thought process</p>
-                        </button>
-                        <button class="model-option text-white block w-full text-left" data-value="qwen-2.5-32b">
-                            <div class="flex items-center">
-                                <span class="flex-grow">TushAI T1</span>
-                                <i class="fas fa-check ml-2 hidden"></i>
-                            </div>
-                            <p class="text-gray-400 text-xs mt-1">Standard model without thought process</p>
-                        </button>
-                        <button class="model-option text-white block w-full text-left" data-value="qwen-2.5-coder-32b">
-                            <div class="flex items-center">
-                                <span class="flex-grow">TushAI T1 Coder</span>
-                                <i class="fas fa-check ml-2 hidden"></i>
-                            </div>
-                            <p class="text-gray-400 text-xs mt-1">Specialized model for coding tasks</p>
-                        </button>
+                        <!-- ... (keep existing model options) ... -->
                     </div>
-                    </div>
+                </div>
             </div>
             <button id="newChatButton" class="text-white hover:bg-gray-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -492,6 +474,8 @@
                 </svg>
             </button>
         </div>
+        <!-- ... (rest of the content) ... -->
+    </div>
         <div class="mt-20 flex flex-col items-center justify-center w-full">
             <h1 class="text-2xl md:text-4xl font-bold mb-8">What can I help with?</h1>
             <div class="w-full max-w-2xl mb-8 flex flex-col">
