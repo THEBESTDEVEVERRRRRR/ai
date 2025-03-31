@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TushAI - AI for Everyone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDCrDwLmK5vvLeTJmDw8Uxu83cQhLo0PoM",
+            authDomain: "tushai.firebaseapp.com",
+            projectId: "tushai",
+            storageBucket: "tushai.firebasestorage.app",
+            messagingSenderId: "479161675892",
+            appId: "1:479161675892:web:114d4641482630b53e6121"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        // Check if user is logged in and redirect if needed
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                // User is signed in, redirect to dashboard
+                window.location.href = 'dashboard.html';
+            }
+            // If not signed in, the page will continue loading normally
+        });
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="fixed w-full top-0 z-50 bg-gray-900 bg-opacity-90 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <a href="chat.html">
+                        <img src="logo.png" alt="TushAI Logo" class="h-10">
+                    </a>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#features" class="text-gray-300 hover:text-white transition">Features</a>
+                    <a href="#pricing" class="text-gray-300 hover:text-white transition">Pricing</a>
+                    <a href="about-us.html" class="text-gray-300 hover:text-white transition">About</a>
+                    <a href="news.html" class="text-gray-300 hover:text-white transition">News</a>
+                    <a href="contact-us.html" class="text-gray-300 hover:text-white transition">Contact</a>
+                </nav>
+                <div>
+                    <a href="login.html" class="text-gray-300 hover:text-white transition mr-4">Login</a>
+                    <a href="#get-started" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md font-medium transition">Get Started</a>
+                </div>
+                <div class="md:hidden">
+                    <button type="button" class="text-gray-300 hover:text-white">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-4 gradient-bg">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 class="text-5xl font-bold leading-tight mb-6">AI That Works For You, Not The Other Way Around</h1>
+                    <p class="text-xl text-gray-300 mb-8">TushAI brings powerful artificial intelligence to your fingertips, making everyday tasks easier and more efficient.</p>
+                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                        <a href="#get-started" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-md font-medium text-center transition">Try For Free</a>
+                        <a href="#learn-more" class="border border-gray-600 hover:border-gray-400 text-white px-8 py-3 rounded-md font-medium text-center transition">See How It Works</a>
+                    </div>
+                </div>
+                <div class="flex justify-center">
+                    <img src="aitech.png" alt="TushAI Platform" class="rounded-lg shadow-2xl">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold mb-4">AI That Makes Life Easier</h2>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto">Discover how TushAI can simplify your daily tasks and boost your productivity.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-gray-800 p-8 rounded-xl transition duration-300 feature-card">
+                    <div class="text-blue-500 mb-4">
+                        <i class="fas fa-brain text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Smart Conversations</h3>
+                    <p class="text-gray-400">Chat naturally with an AI that understands context and responds like a human, helping with questions, ideas, and more.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-gray-800 p-8 rounded-xl transition duration-300 feature-card">
+                    <div class="text-blue-500 mb-4">
+                        <i class="fas fa-chart-line text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Personal Assistant</h3>
+                    <p class="text-gray-400">Let TushAI help organize your schedule, remind you of important events, and provide personalized recommendations.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-gray-800 p-8 rounded-xl transition duration-300 feature-card">
+                    <div class="text-blue-500 mb-4">
+                        <i class="fas fa-code text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Creative Writing</h3>
+                    <p class="text-gray-400">Get help with writing emails, essays, stories, or social media posts that sound natural and engaging.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-gray-800 p-8 rounded-xl transition duration-300 feature-card">
+                    <div class="text-blue-500 mb-4">
+                        <i class="fas fa-image text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Photo Enhancement</h3>
+                    <p class="text-gray-400">Automatically improve your photos, remove unwanted objects, or create entirely new images from your descriptions.</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="bg-gray-800 p-8 rounded-xl transition duration-300 feature-card">
+                    <div class="text-blue-500 mb-4">
+                        <i class="fas fa-lock text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Privacy First</h3>
+                    <p class="text-gray-400">Your personal data stays private - we never use your conversations to train our AI or share them with third parties.</p>
+                </div>
+                <!-- Feature 6 -->
+                <div class="bg-gray-800 p-8 rounded-xl transition duration-300 feature-card">
+                    <div class="text-blue-500 mb-4">
+                        <i class="fas fa-shield-alt text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Enhanced Security</h3>
+                    <p class="text-gray-400">AI-powered security features that protect your personal data and detect potential threats.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 px-4 bg-gray-800">
+        <div class="max-w-6xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-4">Simple, Transparent Pricing</h2>
+            <p class="text-xl text-gray-400 max-w-3xl mx-auto mb-12">Choose the plan that fits your lifestyle. No hidden fees or complicated pricing structures.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Free Plan -->
+                <div class="bg-gray-900 p-8 rounded-xl border border-gray-700 transition duration-300 hover:border-blue-500">
+                    <div class="text-blue-400 mb-4">
+                        <i class="fas fa-rocket text-4xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">Free</h3>
+                    <p class="text-5xl font-bold mb-6">$0<span class="text-xl text-gray-400">/month</span></p>
+                    <div class="text-left mb-8">
+                        <p class="flex items-center mb-3 text-gray-300">
+                            <i class="fas fa-check text-green-500 mr-3"></i> Unlimited access to TushAI T1 models
+                        </p>
+                        <p class="flex items-center mb-3 text-gray-300">
+                            <i class="fas fa-check text-green-500 mr-3"></i> Community support
+                        </p>
+                        <p class="flex items-center mb-3 text-gray-400">
+                            <i class="fas fa-times text-red-500 mr-3"></i> Access to beta features
+                        </p>
+                    </div>
+                    <a href="chat.html" class="block w-full bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-md font-medium text-center transition">Chat Now</a>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="bg-gray-900 p-8 rounded-xl border-2 border-blue-500 shadow-lg shadow-blue-500/10 relative">
+                    <div class="absolute top-0 right-0 bg-blue-500 text-white px-4 py-1 rounded-bl-lg rounded-tr-lg text-sm font-medium">
+                        POPULAR
+                    </div>
+                    <div class="text-blue-400 mb-4">
+                        <i class="fas fa-crown text-4xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">Pro</h3>
+                    <p class="text-5xl font-bold mb-6">$5<span class="text-xl text-gray-400">/month</span></p>
+                    <div class="text-left mb-8">
+                        <p class="flex items-center mb-3 text-gray-300">
+                            <i class="fas fa-check text-green-500 mr-3"></i> Everything in Free plan
+                        </p>
+                        <p class="flex items-center mb-3 text-gray-300">
+                            <i class="fas fa-check text-green-500 mr-3"></i> Access to models in Beta or Alpha stages
+                        </p>
+                        <p class="flex items-center mb-3 text-gray-300">
+                            <i class="fas fa-check text-green-500 mr-3"></i> Priority support
+                        </p>
+                    </div>
+                    <a href="payment.html" class="block w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md font-medium text-center transition">Get Started</a>
+                </div>
+            </div>
+
+            <div class="mt-12 text-gray-400">
+                <p>Need a custom solution for your enterprise? <a href="contact-us.html" class="text-blue-400 hover:underline">Contact us</a> for custom pricing.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <img src="aboutus.png" alt="About TushAI" class="rounded-lg shadow-xl">
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold mb-6">About TushAI</h2>
+                    <p class="text-gray-300 mb-6">TushAI was founded with a mission to make advanced artificial intelligence accessible to everyone. Our team of AI experts and engineers work tirelessly to develop intuitive AI tools that help you in your daily life.</p>
+                    <p class="text-gray-300 mb-6">With headquarters in London and a global team of AI specialists, we're committed to creating AI that's helpful, ethical, and easy to use.</p>
+                    <div class="flex space-x-6">
+                        <div>
+                            <h4 class="text-4xl font-bold text-blue-500">98%</h4>
+                            <p class="text-gray-400">User Satisfaction</p>
+                        </div>
+                        <div>
+                            <h4 class="text-4xl font-bold text-blue-500">500K+</h4>
+                            <p class="text-gray-400">Active Users</p>
+                        </div>
+                        <div>
+                            <h4 class="text-4xl font-bold text-blue-500">24/7</h4>
+                            <p class="text-gray-400">Support</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="get-started" class="py-20 px-4 bg-blue-900">
+        <div class="max-w-5xl mx-auto text-center">
+            <h2 class="text-4xl font-bold mb-6">Ready to Make Your Life Easier?</h2>
+            <p class="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">Join thousands of people who use TushAI every day to save time, be more productive, and unleash their creativity.</p>
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="chat.html" class="bg-white text-blue-900 hover:bg-gray-200 px-8 py-3 rounded-md font-medium text-center transition">Chat Now</a>
+                <a href="#pricing" class="bg-transparent border-2 border-white hover:bg-white hover:bg-opacity-10 text-white px-8 py-3 rounded-md font-medium text-center transition">Get Started</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 py-12 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <img src="logo.png" alt="TushAI Logo" class="h-10 mb-4">
+                    <p class="text-gray-400 mb-4">Making AI accessible to everyone. Your personal assistant for everyday tasks, creativity, and learning.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#features" class="text-gray-400 hover:text-white transition">Features</a></li>
+                        <li><a href="#pricing" class="text-gray-400 hover:text-white transition">Pricing</a></li>
+                        <li><a href="about-us.html" class="text-gray-400 hover:text-white transition">About</a></li>
+                        <li><a href="news.html" class="text-gray-400 hover:text-white transition">News</a></li>
+                        <li><a href="contact-us.html" class="text-gray-400 hover:text-white transition">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Help & Support</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Getting Started</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Tutorials</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Community</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="mailto:help@ai.tush.my.id" class="text-gray-400 hover:text-white transition">
+                                <i class="fas fa-envelope mr-2"></i> help@ai.tush.my.id
+                            </a>
+                        </li>
+                        <li class="text-gray-400">
+                            <i class="fas fa-headset mr-2"></i> 24/7 User Support
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500">
+                <p>TKT Technology Solutions UK, Ltd</p>
+                <p>TushAI &copy; 2025. All rights reserved.</p>
+                <div class="mt-2">
+                    <a href="terms-of-service.html" class="text-gray-500 hover:text-white transition">Terms of Service</a> |
+                    <a href="privacy-policy.html" class="text-gray-500 hover:text-white transition">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+                            </body>
+                            </html>
