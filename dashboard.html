@@ -23,8 +23,6 @@
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-
-<!-- Add this script at the end of your file, just before the closing </body> tag -->
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js"></script>
 <!-- Google Gemini API -->
 <script>
@@ -68,6 +66,7 @@
     }
 
     // Function to initialize Gemini API
+    // Function to initialize Gemini API
     async function initializeGeminiApi() {
         try {
             // Load Google's generative AI SDK
@@ -76,16 +75,18 @@
             // Initialize the API with your API key
             const genAI = new GoogleGenerativeAI(geminiApiKey);
 
-            // Get the model
-            const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro-exp-03-25" });
+            // Get the model based on current selection
+            const modelName = currentModel === 'gemini-2.0-flash' ? 'gemini-1.5-flash' : 'gemini-1.5-pro';
+            const model = genAI.getGenerativeModel({ model: modelName });
 
-            console.log('Gemini API initialized successfully');
+            console.log('Gemini API initialized successfully for model:', modelName);
             return model;
         } catch (error) {
             console.error('Failed to initialize Gemini API:', error);
             throw error;
         }
     }
+
 </script>
     <style>
         body {
@@ -601,6 +602,15 @@
                             </div>
                             <p class="text-gray-400 text-xs mt-1">TushAI New Model In ALPHA</p>
                         </button>
+                        <button class="model-option text-white block w-full text-left" data-value="gemini-2.0-flash">
+                            <div class="flex items-center">
+                                <span class="flex-grow">TushAI T1 Search</span>
+                                <span class="bg-green-500 text-xs px-2 py-0.5 rounded-full mr-2">SEARCH</span>
+                                <span class="bg-blue-500 text-xs px-2 py-0.5 rounded-full mr-2">BETA</span>
+                                <i class="fas fa-check ml-2 hidden"></i>
+                            </div>
+                            <p class="text-gray-400 text-xs mt-1">TushAI T1 with web search capabilities</p>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -645,7 +655,7 @@ if (document.compatMode !== 'CSS1Compat') {
     console.warn('KaTeX may not work correctly in quirks mode. Please ensure your document has a valid DOCTYPE.');
 }
     const apiKey = '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';
-    const geminiApiKey = 'AIzaSyDC7HhZ2SbJAFp9DSLnCD_Gd8xpSGjE55s'; // Replace with your actual Gemini API key
+    const geminiApiKey = 'AIzaSyBUrX6HjaTmTD1-fLChJwPlPr6HrT2EVO8'; // Replace with your actual Gemini API key
 if (typeof katex === 'undefined') {
     console.error('KaTeX is not loaded. Please check your KaTeX script inclusion.');
 }
@@ -751,18 +761,27 @@ if (typeof katex === 'undefined') {
             case 'qwen-qwq-32b':
                 selectedModelText.textContent = 'TushAI T1 Reasoning';
                 hideAlphaWarning();
+                hideSearchBadge();
                 break;
             case 'qwen-2.5-32b':
                 selectedModelText.textContent = 'TushAI T1';
                 hideAlphaWarning();
+                hideSearchBadge();
                 break;
             case 'qwen-2.5-coder-32b':
                 selectedModelText.textContent = 'TushAI T1 Coder';
                 hideAlphaWarning();
+                hideSearchBadge();
                 break;
             case 'gemini-2.5-pro-exp-03-25':
                 selectedModelText.textContent = 'TushAI T1.1 (ALPHA)';
                 showAlphaWarning();
+                hideSearchBadge();
+                break;
+            case 'gemini-2.0-flash':
+                selectedModelText.textContent = 'TushAI T1 Search';
+                hideAlphaWarning();
+                showSearchBadge();
                 break;
         }
         modelOptions.forEach(option => {
@@ -774,6 +793,35 @@ if (typeof katex === 'undefined') {
             }
         });
     }
+
+    // Function to show search badge
+    function showSearchBadge() {
+        // Check if badge already exists
+        if (!document.getElementById('searchBadge')) {
+            const badgeDiv = document.createElement('div');
+            badgeDiv.id = 'searchBadge';
+            badgeDiv.className = 'bg-green-900 text-white p-3 rounded-md text-sm mt-2 mb-4';
+            badgeDiv.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-search mr-2"></i>
+                    <span>TushAI T1 Search uses web search to provide up-to-date information. TushAI T1 Search is also in BETA.</span>
+                </div>
+            `;
+
+            // Insert the badge below the input container
+            const inputContainer = document.querySelector('.input-container');
+            inputContainer.parentNode.insertBefore(badgeDiv, inputContainer.nextSibling);
+        }
+    }
+
+    // Function to hide search badge
+    function hideSearchBadge() {
+        const badgeDiv = document.getElementById('searchBadge');
+        if (badgeDiv) {
+            badgeDiv.remove();
+        }
+    }
+
 
 // Function to show alpha warning
 function showAlphaWarning() {
@@ -996,7 +1044,7 @@ function hideAlphaWarning() {
     submitButton.addEventListener('click', handleSubmit);
     stopButton.addEventListener('click', handleStop);
 
-async function handleSubmit() {
+    async function handleSubmit() {
     const userMessage = userInput.value.trim();
     if (!userMessage) return;
 
@@ -1026,10 +1074,48 @@ async function handleSubmit() {
 
         let responseContent = '';
 
-        if (currentModel === 'gemini-2.5-pro-exp-03-25') {
+        if (currentModel === 'gemini-2.5-pro-exp-03-25' || currentModel === 'gemini-2.0-flash') {
             try {
                 // Initialize the Gemini API
-                const model = await initializeGeminiApi();
+                const { GoogleGenerativeAI } = await import("https://esm.run/@google/generative-ai");
+                const genAI = new GoogleGenerativeAI(geminiApiKey);
+
+                // Get the appropriate model
+                // Get the appropriate model
+                const modelName = currentModel === 'gemini-2.0-flash' ? 'gemini-2.0-flash' : 'gemini-1.5-pro';
+                const model = genAI.getGenerativeModel({ 
+                    model: modelName,
+                    generationConfig: {
+                        temperature: 0.7,
+                        topK: 40,
+                        topP: 0.95,
+                        maxOutputTokens: currentModel === 'gemini-2.0-flash' ? 4096 : 8192,
+                    },
+                    safetySettings: [
+                        {
+                            category: "HARM_CATEGORY_HARASSMENT",
+                            threshold: "BLOCK_NONE"
+                        },
+                        {
+                            category: "HARM_CATEGORY_HATE_SPEECH",
+                            threshold: "BLOCK_NONE"
+                        },
+                        {
+                            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                            threshold: "BLOCK_NONE"
+                        },
+                        {
+                            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                            threshold: "BLOCK_NONE"
+                        }
+                    ],
+                    // Use google_search instead of googleSearchRetrieval for Flash model
+                    tools: currentModel === 'gemini-2.0-flash' ? [{
+                        google_search: {}
+                    }] : undefined
+                });
+
+
 
                 // Get chat history for context
                 const currentChat = chatHistory.find(c => c.id === currentChatId);
@@ -1061,28 +1147,56 @@ async function handleSubmit() {
                 // Start a chat session
                 const chat = model.startChat({
                     history: history,
-                    generationConfig: {
-                        temperature: 0.7,
-                        topK: 40,
-                        topP: 0.95,
-                        maxOutputTokens: 8192,
-                    }
+                    // Use google_search instead of googleSearchRetrieval for Flash model
+                    tools: currentModel === 'gemini-2.0-flash' ? [{
+                        google_search: {}
+                    }] : undefined
                 });
 
                 // Send the message and get response
-                const result = await chat.sendMessage(userMessage);
+                const result = await chat.sendMessage(userMessage, {
+                    // Enable auto search for Flash model
+                    toolConfig: currentModel === 'gemini-2.0-flash' ? {
+                        google_search: {
+                            enable_auto_search: true
+                        }
+                    } : undefined
+                });
 
-                // Check if the response has multiple parts (thinking and answer)
-                if (result.response.parts && result.response.parts.length > 1) {
-                    // First part is thinking, second part is answer
-                    const thinking = result.response.parts[0].text;
-                    const answer = result.response.parts[1].text;
 
-                    // Format the response with <think> tags for our parser
-                    responseContent = `<think>${thinking}</think>\n\n${answer}`;
+
+                // Process the response
+                if (currentModel === 'gemini-2.5-pro-exp-03-25') {
+                    // Check if the response has multiple parts (thinking and answer)
+                    if (result.response.parts && result.response.parts.length > 1) {
+                        // First part is thinking, second part is answer
+                        const thinking = result.response.parts[0].text;
+                        const answer = result.response.parts[1].text;
+
+                        // Format the response with <think> tags for our parser
+                        responseContent = `<think>${thinking}</think>\n\n${answer}`;
+                    } else {
+                        // Fallback to standard response if parts structure is different
+                        responseContent = result.response.text();
+                    }
                 } else {
-                    // Fallback to standard response if parts structure is different
+                    // For Flash model, just get the text response
                     responseContent = result.response.text();
+
+                    // If there are citations, add them to the response
+                    if (result.response.candidates && 
+                        result.response.candidates[0] && 
+                        result.response.candidates[0].citationMetadata && 
+                        result.response.candidates[0].citationMetadata.citations) {
+
+                        const citations = result.response.candidates[0].citationMetadata.citations;
+                        if (citations.length > 0) {
+                            responseContent += "\n\n**Sources:**\n";
+                            citations.forEach((citation, index) => {
+                                responseContent += `${index + 1}. [${citation.title || 'Source'}](${citation.uri || '#'})\n`;
+                            });
+                        }
+                    }
                 }
 
             } catch (error) {
@@ -1176,12 +1290,13 @@ async function handleSubmit() {
         controller = null;
     }
 }
-    function handleStop() {
-        if (controller) {
-            controller.abort();
-            controller = null;
-        }
+
+function handleStop() {
+    if (controller) {
+        controller.abort();
+        controller = null;
     }
+}
     userInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && submitButton.style.display !== 'none') {
             handleSubmit();
