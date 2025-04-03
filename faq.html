@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://i.ibb.co.com/TM7MNRvb/Screenshot-2025-03-27-162757-removebg-preview-removebg-preview.png" type="image/png">
+    <title>Frequently Asked Questions - TushAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        }
+        .faq-item {
+            border-bottom: 1px solid rgba(75, 85, 99, 0.4);
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        .faq-question {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .faq-question:hover {
+            color: #60a5fa;
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+        }
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class=" bg-gray-900 min-h-screen text-white">
+    <!-- Navigation -->
+    <div class="fixed top-4 left-4">
+        <a href="index.html">
+            <img src="logo.png" alt="TushAI Logo" class="h-10">
+        </a>
+    </div>
+
+    <div class="container mx-auto px-4 py-16 max-w-4xl">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold mb-4">Frequently Asked Questions</h1>
+            <p class="text-xl text-gray-300">Find answers to common questions about TushAI services</p>
+        </div>
+
+        <div class="bg-gray-800 rounded-lg shadow-xl p-6 mb-8">
+            <div class="mb-6">
+                <div class="relative">
+                    <input type="text" id="search-faq" placeholder="Search questions..." 
+                        class="w-full py-3 px-4 bg-gray-700 rounded-lg text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <div class="absolute right-3 top-3 text-gray-400">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div id="faq-container">
+                <!-- General Questions -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold mb-4 text-blue-400">General Questions</h2>
+                    
+                    <div class="faq-item py-4">
+                        <div class="faq-question flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">What is TushAI?</h3>
+                            <span class="faq-icon text-blue-400"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer mt-2 text-gray-300">
+                            <p>TushAI is an artificial intelligence platform designed to make AI accessible to everyone. We offer a range of AI-powered tools and services that help individuals and businesses automate tasks, gain insights from data, and enhance productivity.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item py-4">
+                        <div class="faq-question flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">How do I get started with TushAI?</h3>
+                            <span class="faq-icon text-blue-400"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer mt-2 text-gray-300">
+                            <p>Getting started is easy! Simply create an account on our platform, choose the services that best fit your needs, and follow our guided setup process. We offer tutorials and documentation to help you make the most of our AI tools.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item py-4">
+                        <div class="faq-question flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">Is TushAI suitable for beginners?</h3>
+                            <span class="faq-icon text-blue-400"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer mt-2 text-gray-300">
+                            <p>Absolutely! TushAI is designed with user-friendliness in mind. Our platform is intuitive and requires no technical expertise or coding knowledge. We've created our services to be accessible to everyone, regardless of their technical background.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Services & Features -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold mb-4 text-blue-400">Services & Features</h2>
+                    
+                    <div class="faq-item py-4">
+                        <div class="faq-question flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">What services does TushAI offer?</h3>
+                            <span class="faq-icon text-blue-400"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer mt-2 text-gray-300">
+                            <p>TushAI offers a wide range of AI-powered services, including:</p>
+                            <ul class="list-disc pl-5 mt-2 space-y-1">
+                                <li>Natural language processing and text generation</li>
+                                <li>Image recognition and generation</li>
+                                <li>Data analysis and insights</li>
+                                <li>Conversational AI and chatbots</li>
+                                <li>Personalized recommendations</li>
+                                <li>Automation tools for various workflows</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item py-4">
+                        <div class="faq-question flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">Can I customize TushAI for my specific needs?</h3>
+                            <span class="faq-icon text-blue-400"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer mt-2 text-gray-300">
+                            <p>Yes, TushAI offers customization options to tailor our services to your specific requirements. Our platform allows you to configure parameters, train models on your data, and integrate with your existing systems for a personalized AI experience.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item py-4">
+                        <div class="faq-question flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">Does TushAI integrate with other tools and platforms?</h3>
+                            <span class="faq-icon text-blue-400"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer mt-2 text-gray-300">
+                            <p>Yes, TushAI is designed to work seamlessly with many popular tools and platforms. We offer APIs and pre-built integrations for common business applications, making it easy to incorporate our AI capabilities into your existing workflows.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pricing & Plans -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold mb-4 text-blue-400">Pricing & Plans</h2>
+                    
+                    <div class="faq-item py-4">
+                        <div class="faq-question flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">How much does TushAI cost?</h3>
+                            <span class="faq-icon text-blue-400"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer mt-2 text-gray-300">
+                            <p>TushAI offers flexible pricing plans to suit different needs and budgets. We have a free tier with basic features, as well as premium plans with additional capabilities and higher usage limits. Visit our pricing page for detailed information on our current plans and rates.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item py-4">
+                        <div class="faq-question flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">Is there a free trial available?</h3>
+                            <span class="faq-icon text-blue-400"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer mt-2 text-gray-300">
+                            <p>Yes, we offer a free trial period for our premium plans. This allows you to explore all features and determine which plan best suits your needs before committing to a subscription.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item py-4">
+                        <div class="faq-question flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">Can I upgrade or downgrade my plan?</h3>
+                            <span class="faq-icon text-blue-400"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer mt-2 text-gray-300">
+                            <p>Absolutely! You can upgrade or downgrade your subscription at any time through your account dashboard. Changes to your plan will be reflected in your next billing cycle.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security & Privacy -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold mb-4 text-blue-400">Security & Privacy</h2>
+                    
+                    <div class="faq-item py-4">
+                        <div class="faq-question flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">How does TushAI handle my data?</h3>
+                            <span class="faq-icon text-blue-400"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer mt-2 text-gray-300">
+                            <p>We take data privacy very seriously. All data is encrypted both in transit and at rest. We only use your data to provide and improve our services, and we never sell your information to third parties. For more details, please refer to our Privacy Policy.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item py-4">
+                        <div class="faq-question flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">Is TushAI compliant with data protection regulations?</h3>
+                            <span class="faq-icon text-blue-400"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer mt-2 text-gray-300">
+                            <p>Yes, TushAI is designed to be compliant with major data protection regulations, including GDPR and CCPA. We implement appropriate technical and organizational measures to ensure the security and privacy of your data.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item py-4">
+                        <div class="faq-question flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">Can I delete my data from TushAI?</h3>
+                            <span class="faq-icon text-blue-400"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer mt-2 text-gray-300">
+                            <p>Yes, you have control over your data. You can delete specific data or your entire account at any time through your account settings. When you delete your data, it is permanently removed from our systems in accordance with our data retention policies.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center">
+            <p class="mb-4">Can't find what you're looking for?</p>
+            <a href="contact.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200">Contact Support</a>
+        </div>
+    </div>
+
+    <script>
+        // FAQ toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                
+                question.addEventListener('click', () => {
+                    // Toggle active class on the clicked item
+                    item.classList.toggle('active');
+                    
+                    // Close other items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item && otherItem.classList.contains('active')) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+                });
+            });
+            
+            // Search functionality
+            const searchInput = document.getElementById('search-faq');
+            
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                faqItems.forEach(item => {
+                    const question = item.querySelector('.faq-question h3').textContent.toLowerCase();
+                    const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+                    
+                    if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                        item.style.display = 'block';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
