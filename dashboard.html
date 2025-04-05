@@ -893,7 +893,7 @@ function hideAlphaWarning() {
                 element.textContent += text.charAt(index);
                 index++;
                 const delay = Math.random() * 8 + 2; // Random delay between 2ms and 10ms
-                setTimeout(addNextChar, delay);
+                setTimeout(() => {addNextChar();scrollChatToBottom();}, delay);
             } else {
                 element.innerHTML = html; // Set the final HTML with proper formatting
                 element.classList.remove('typing-animation');
@@ -923,6 +923,7 @@ function hideAlphaWarning() {
                         }
                     });
                 }
+                scrollChatToBottom();
             }, 100);
         }
         chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -939,6 +940,7 @@ function hideAlphaWarning() {
         if (isUser) {
             messageElement.textContent = content;
             chatMessages.appendChild(messageElement);
+            scrollChatToBottom();
         } else if (isThought && (currentModel === 'qwen-qwq-32b' || currentModel === 'gemini-2.5-pro-exp-03-25')) {
             messageElement.classList.add('thought-message', 'thought-dropdown');
             messageElement.innerHTML = `
@@ -962,6 +964,7 @@ function hideAlphaWarning() {
             chatMessages.appendChild(messageElement);
             const parsedContent = marked.parse(content);
             messageElement.querySelector('.thought-content').innerHTML = parsedContent;
+            scrollChatToBottom();
         } else {
             const contentWrapper = document.createElement('div');
             contentWrapper.classList.add('message-content');
@@ -978,11 +981,13 @@ function hideAlphaWarning() {
             if (isOldMessage) {
                 // For old messages, just set the content without animation
                 contentWrapper.innerHTML = marked.parse(content);
+                scrollChatToBottom();
             } else {
                 // For new messages, use the typing animation
                 contentWrapper.classList.add('typing-animation');
                 typeWriter(contentWrapper, marked.parse(content));
             }
+            scrollChatToBottom();
         }
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -994,6 +999,12 @@ function hideAlphaWarning() {
         // Render LaTeX for the newly added message
         renderLatex(messageElement);
     }
+    function scrollChatToBottom() {
+    requestAnimationFrame(() => {
+    const chatContainer = document.getElementById('chatContainer');
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  });
+}
 
 
     function copyToClipboard(text) {
@@ -1057,12 +1068,14 @@ function hideAlphaWarning() {
     }
     addMessage(userMessage, true);
     userInput.value = '';
+    scrollChatToBottom();
 
     // Show typing indicator
     const typingIndicator = document.createElement('div');
     typingIndicator.classList.add('assistant-message', 'typing-indicator');
     typingIndicator.textContent = 'AI is typing...';
     chatMessages.appendChild(typingIndicator);
+    scrollChatToBottom();
 
     // Show stop button and hide submit button
     submitButton.style.display = 'none';
