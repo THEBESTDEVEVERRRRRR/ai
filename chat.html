@@ -728,6 +728,7 @@
         index++;
         const delay = Math.random() * 8 + 2; // Random delay between 2ms and 10ms
         setTimeout(addNextChar, delay);
+        scrollChatToBottom(); // Call here to scroll while typing
       } else {
         element.innerHTML = html; // Set the final HTML with proper formatting
         element.classList.remove('typing-animation');
@@ -757,14 +758,15 @@
               }
             });
           }
+          scrollChatToBottom(); // Call here after LaTeX rendering
         }, 100);
       }
-      chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     element.textContent = ''; // Clear the element before starting
     addNextChar();
   }
+
 
   function addMessage(content, isUser = false, isThought = false, addToHistory = true, isOldMessage = false) {
     const messageElement = document.createElement('div');
@@ -773,6 +775,7 @@
     if (isUser) {
       messageElement.textContent = content;
       chatMessages.appendChild(messageElement);
+      scrollChatToBottom();
     } else if (isThought && currentModel === 'qwen-qwq-32b') {
       messageElement.classList.add('thought-message', 'thought-dropdown');
       messageElement.innerHTML = `
@@ -796,6 +799,7 @@
       chatMessages.appendChild(messageElement);
       const parsedContent = marked.parse(content);
       messageElement.querySelector('.thought-content').innerHTML = parsedContent;
+      scrollChatToBottom();
     } else {
       const contentWrapper = document.createElement('div');
       contentWrapper.classList.add('message-content');
@@ -812,11 +816,13 @@
       if (isOldMessage) {
         // For old messages, just set the content without animation
         contentWrapper.innerHTML = marked.parse(content);
+        scrollChatToBottom();
       } else {
         // For new messages, use the typing animation
         contentWrapper.classList.add('typing-animation');
         typeWriter(contentWrapper, marked.parse(content));
       }
+      scrollChatToBottom();
     }
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -828,6 +834,13 @@
     // Render LaTeX for the newly added message
     renderLatex(messageElement);
   }
+
+  function scrollChatToBottom() {
+    requestAnimationFrame(() => {
+    const chatContainer = document.getElementById('chatContainer');
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  });
+}
 
 
   function copyToClipboard(text) {
@@ -889,12 +902,14 @@
     }
     addMessage(userMessage, true);
     userInput.value = '';
+    scrollChatToBottom();
 
     // Show typing indicator
     const typingIndicator = document.createElement('div');
     typingIndicator.classList.add('assistant-message', 'typing-indicator');
     typingIndicator.textContent = 'AI is typing...';
     chatMessages.appendChild(typingIndicator);
+    scrollChatToBottom();
 
     // Show stop button and hide submit button
     submitButton.style.display = 'none';
