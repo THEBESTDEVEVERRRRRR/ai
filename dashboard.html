@@ -763,12 +763,12 @@ if (typeof katex === 'undefined') {
                 hideAlphaWarning();
                 hideSearchBadge();
                 break;
-            case 'qwen-2.5-32b':
+            case 'meta-llama/llama-4-scout-17b-16e-instruct':
                 selectedModelText.textContent = 'TushAI T1';
                 hideAlphaWarning();
                 hideSearchBadge();
                 break;
-            case 'qwen-2.5-coder-32b':
+            case 'meta-llama/llama-4-maverick-17b-128e-instruct':
                 selectedModelText.textContent = 'TushAI T1 Coder';
                 hideAlphaWarning();
                 hideSearchBadge();
@@ -1039,9 +1039,9 @@ function hideAlphaWarning() {
         switch (model) {
             case 'qwen-qwq-32b':
                 return 'You are a helpful assistant. Use Markdown formatting in your responses. Wrap your thinking process in <think> tags. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
-            case 'qwen-2.5-32b':
+            case 'meta-llama/llama-4-scout-17b-16e-instruct':
                 return 'You are a helpful assistant. Use Markdown formatting in your responses. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
-            case 'qwen-2.5-coder-32b':
+            case 'meta-llama/llama-4-maverick-17b-128e-instruct':
                 return 'You are a helpful coding assistant. Provide clear and concise code explanations and solutions. Use Markdown formatting for code blocks and syntax highlighting. For any mathematical expressions, use KaTeX-compatible syntax with $...$ for inline math and $...$ for display math.';
             case 'gemini-2.5-pro-exp-03-25':
                 return 'You are a helpful assistant. Use Markdown formatting in your responses. Wrap your thinking process in <think> tags. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
@@ -1222,7 +1222,7 @@ function hideAlphaWarning() {
                         'Authorization': `Bearer ${apiKey}`
                     },
                     body: JSON.stringify({
-                        model: 'qwen-2.5-32b', // Fallback to a reliable model
+                        model: 'meta-llama/llama-4-scout-17b-16e-instruct', // Fallback to a reliable model
                         messages: [
                             {role: 'system', content: getSystemPrompt('qwen-2.5-32b')},
                             {role: 'user', content: userMessage}
