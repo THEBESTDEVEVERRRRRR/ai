@@ -504,14 +504,14 @@
             </div>
             <p class="text-gray-400 text-xs mt-1">Advanced reasoning model with thought process</p>
           </button>
-          <button class="model-option text-white block w-full text-left" data-value="qwen-2.5-32b">
+          <button class="model-option text-white block w-full text-left" data-value="meta-llama/llama-4-scout-17b-16e-instruct">
             <div class="flex items-center">
               <span class="flex-grow">TushAI T1</span>
               <i class="fas fa-check ml-2 hidden"></i>
             </div>
             <p class="text-gray-400 text-xs mt-1">Standard model without thought process</p>
           </button>
-          <button class="model-option text-white block w-full text-left" data-value="qwen-2.5-coder-32b">
+          <button class="model-option text-white block w-full text-left" data-value="meta-llama/llama-4-maverick-17b-128e-instruct">
             <div class="flex items-center">
               <span class="flex-grow">TushAI T1 Coder</span>
               <i class="fas fa-check ml-2 hidden"></i>
@@ -668,10 +668,10 @@
       case 'qwen-qwq-32b':
         selectedModelText.textContent = 'TushAI T1 Reasoning';
         break;
-      case 'qwen-2.5-32b':
+      case 'meta-llama/llama-4-scout-17b-16e-instruct':
         selectedModelText.textContent = 'TushAI T1';
         break;
-      case 'qwen-2.5-coder-32b':
+      case 'meta-llama/llama-4-maverick-17b-128e-instruct':
         selectedModelText.textContent = 'TushAI T1 Coder';
         break;
     }
@@ -875,9 +875,9 @@
     switch (model) {
       case 'qwen-qwq-32b':
         return 'You are a helpful assistant. Use Markdown formatting in your responses. Wrap your thinking process in <think> tags. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
-      case 'qwen-2.5-32b':
+      case 'meta-llama/llama-4-scout-17b-16e-instruct':
         return 'You are a helpful assistant. Use Markdown formatting in your responses. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
-      case 'qwen-2.5-coder-32b':
+      case 'meta-llama/llama-4-maverick-17b-128e-instruct':
         return 'You are a helpful coding assistant. Provide clear and concise code explanations and solutions. Use Markdown formatting for code blocks and syntax highlighting. For any mathematical expressions, use KaTeX-compatible syntax with $...$ for inline math and $...$ for display math.';
       default:
         return 'You are a helpful assistant.';
