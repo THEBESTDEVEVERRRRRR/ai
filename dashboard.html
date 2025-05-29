@@ -534,6 +534,43 @@
         scrollbar-width: thin;
         scrollbar-color: #4a5568 #1a202c;
     }
+
+    /* Image upload styles */
+    #imagePreviewContainer {
+        transition: all 0.3s ease-in-out;
+    }
+
+    #imagePreview {
+        max-height: 300px;
+        object-fit: contain;
+    }
+
+    #removeImage {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        transition: all 0.2s;
+    }
+
+    /* Image upload button visibility */
+    .input-container label[for="imageUpload"] {
+        display: none; /* Hidden by default */
+    }
+    
+    .input-container.image-enabled label[for="imageUpload"] {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        color: white;
+        border-left: 1px solid #4a5568;
+    }
+
+    .input-container.image-enabled label[for="imageUpload"]:hover {
+        background-color: #4a5568;
+    }
     </style>
 </head>
 <body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
@@ -589,10 +626,11 @@
                         </button>
                         <button class="model-option text-white block w-full text-left" data-value="meta-llama/llama-4-maverick-17b-128e-instruct">
                             <div class="flex items-center">
-                                <span class="flex-grow">TushAI T1 Coder</span>
+                                <span class="flex-grow">TushAI T1 Vision</span>
+                                <span class="bg-blue-500 text-xs px-2 py-0.5 rounded-full mr-2">BETA</span>
                                 <i class="fas fa-check ml-2 hidden"></i>
                             </div>
-                            <p class="text-gray-400 text-xs mt-1">Specialized model for coding tasks</p>
+                            <p class="text-gray-400 text-xs mt-1">Specialized model for image analysis.</p>
                         </button>
                         <button class="model-option text-white block w-full text-left" data-value="gemini-2.5-pro-exp-03-25">
                             <div class="flex items-center">
@@ -629,11 +667,21 @@
                 </div>
                 <div class="input-container">
                     <input type="text" id="userInput" placeholder="Ask anything">
+                    <label for="imageUpload" class="cursor-pointer p-2 hover:bg-gray-600 transition-colors">
+                        <i class="fas fa-image"></i>
+                        <input type="file" id="imageUpload" accept="image/*" class="hidden" />
+                    </label>
                     <button id="submitButton">
                         <i class="fas fa-arrow-right"></i>
                     </button>
                     <button id="stopButton" style="display: none;">
                         <i class="fas fa-stop"></i>
+                    </button>
+                </div>
+                <div id="imagePreviewContainer" class="hidden mt-4 p-4 bg-gray-800 rounded-lg">
+                    <img id="imagePreview" class="max-w-full h-auto rounded-lg mb-4" />
+                    <button id="removeImage" class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-times"></i> Remove Image
                     </button>
                 </div>
             </div>
@@ -675,6 +723,8 @@ if (typeof katex === 'undefined') {
     let currentModel = 'qwen-qwq-32b';
     let chatHistory = [];
     let currentChatId = null;
+
+    let currentImage = null;
 
     function generateUniqueId() {
         return Date.now().toString(36) + Math.random().toString(36).substr(2);
@@ -757,33 +807,41 @@ if (typeof katex === 'undefined') {
         }
     }
     function updateSelectedModel() {
+        // Update model text and badges
         switch (currentModel) {
             case 'qwen-qwq-32b':
                 selectedModelText.textContent = 'TushAI T1 Reasoning';
                 hideAlphaWarning();
                 hideSearchBadge();
+                hideImageWarning()
                 break;
             case 'meta-llama/llama-4-scout-17b-16e-instruct':
                 selectedModelText.textContent = 'TushAI T1';
                 hideAlphaWarning();
                 hideSearchBadge();
+                hideImageWarning()
                 break;
             case 'meta-llama/llama-4-maverick-17b-128e-instruct':
-                selectedModelText.textContent = 'TushAI T1 Coder';
+                selectedModelText.textContent = 'TushAI T1 Vision';
                 hideAlphaWarning();
                 hideSearchBadge();
+                showImageWarning()
                 break;
             case 'gemini-2.5-pro-exp-03-25':
                 selectedModelText.textContent = 'TushAI T1.1 (ALPHA)';
                 showAlphaWarning();
                 hideSearchBadge();
+                hideImageWarning()
                 break;
             case 'gemini-2.0-flash':
                 selectedModelText.textContent = 'TushAI T1 Search';
                 hideAlphaWarning();
                 showSearchBadge();
+                hideImageWarning()
                 break;
         }
+
+        // Update checkmarks in dropdown
         modelOptions.forEach(option => {
             const checkIcon = option.querySelector('.fa-check');
             if (option.dataset.value === currentModel) {
@@ -792,6 +850,20 @@ if (typeof katex === 'undefined') {
                 checkIcon.classList.add('hidden');
             }
         });
+
+        // Toggle image upload button visibility
+        const inputContainer = document.querySelector('.input-container');
+        if (currentModel === 'meta-llama/llama-4-maverick-17b-128e-instruct') {
+            inputContainer.classList.add('image-enabled');
+        } else {
+            inputContainer.classList.remove('image-enabled');
+            // Clear any existing image if switching away from image-enabled model
+            if (currentImage) {
+                currentImage = null;
+                document.getElementById('imagePreviewContainer').classList.add('hidden');
+                document.getElementById('imageUpload').value = '';
+            }
+        }
     }
 
     // Function to show search badge
@@ -850,6 +922,35 @@ function hideAlphaWarning() {
         warningDiv.remove();
     }
 }
+
+function showImageWarning() {
+    // Check if warning already exists
+    if (!document.getElementById('imageWarning')) {
+        const imageDiv = document.createElement('div');
+        imageDiv.id = 'imageWarning';
+        imageDiv.className = 'bg-red-900 text-white p-3 rounded-md text-sm mt-2 mb-4';
+        imageDiv.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas fa-info-circle mr-2"></i>
+                <span>TushAI T1 Vision is in Beta. Image and text prompt is seperated, if you add text it will show two answers text answer and image answer.</span>
+            </div>
+        `;
+
+        // Insert the warning below the input container
+        const inputContainer = document.querySelector('.input-container');
+        inputContainer.parentNode.insertBefore(imageDiv, inputContainer.nextSibling);
+    }
+}
+
+// Function to hide alpha warning
+function hideImageWarning() {
+    const imageDiv = document.getElementById('imageWarning');
+    if (imageDiv) {
+        imageDiv.remove();
+    }
+}
+
+
 
     modelSelectButton.addEventListener('click', () => {
         modelDropdown.classList.toggle('hidden');
@@ -1042,11 +1143,11 @@ function hideAlphaWarning() {
             case 'meta-llama/llama-4-scout-17b-16e-instruct':
                 return 'You are a helpful assistant. Use Markdown formatting in your responses. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
             case 'meta-llama/llama-4-maverick-17b-128e-instruct':
-                return 'You are a helpful coding assistant. Provide clear and concise code explanations and solutions. Use Markdown formatting for code blocks and syntax highlighting. For any mathematical expressions, use KaTeX-compatible syntax with $...$ for inline math and $...$ for display math.';
+                return 'You are a helpful assistant. Use Markdown formatting in your responses. For any mathematical expressions, use KaTeX-compatible syntax with $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
             case 'gemini-2.5-pro-exp-03-25':
                 return 'You are a helpful assistant. Use Markdown formatting in your responses. Wrap your thinking process in <think> tags. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
             default:
-                return 'You are a helpful assistant.';
+                return 'You are a helpful assistant. Use Markdown formatting in your responses. For any mathematical expressions, use KaTeX-compatible syntax with $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
         }
     }
     const stopButton = document.getElementById('stopButton');
@@ -1425,5 +1526,168 @@ function renderAllLatex() {
     messages.forEach(renderLatex);
 }
 
+// Proper image analysis functions
+async function getAIResponse(message, imageData = null) {
+    try {
+        const messages = [
+            {
+                role: "system",
+                content: "You are a helpful AI assistant capable of analyzing images and responding to questions. When given both an image and text, provide a single coherent response that addresses both the image content and the question together."
+            }
+        ];
+
+        // If there's both image and text, combine them into a single message
+        if (imageData && message) {
+            messages.push({
+                role: "user",
+                content: [
+                    {
+                        type: "image_url",
+                        image_url: {
+                            url: imageData
+                        }
+                    },
+                    {
+                        type: "text",
+                        text: `Please analyze this image and answer my question: ${message}`
+                    }
+                ]
+            });
+        } else if (imageData) {
+            messages.push({
+                role: "user",
+                content: [
+                    {
+                        type: "image_url",
+                        image_url: {
+                            url: imageData
+                        }
+                    },
+                    {
+                        type: "text",
+                        text: "Please analyze this image and describe what you see."
+                    }
+                ]
+            });
+        } else {
+            messages.push({
+                role: "user",
+                content: message
+            });
+        }
+
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: currentModel,
+                messages: messages,
+                temperature: 0.7,
+                max_tokens: 1000
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`API request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.choices[0].message.content;
+    } catch (error) {
+        console.error('Error getting AI response:', error);
+        throw error;
+    }
+}
+
+    // Handle image upload
+    document.getElementById('imageUpload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Convert the image to base64 and store it
+                currentImage = e.target.result;
+                document.getElementById('imagePreview').src = currentImage;
+                document.getElementById('imagePreviewContainer').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Handle image removal
+    document.getElementById('removeImage').addEventListener('click', function() {
+        currentImage = null;
+        document.getElementById('imagePreviewContainer').classList.add('hidden');
+        document.getElementById('imageUpload').value = '';
+    });    // Submit button event listener
+    submitButton.addEventListener('click', async function() {
+        const message = userInput.value.trim();
+        if (!message && !currentImage) return;
+
+        if (!currentChatId) {
+            createNewChat();
+        }
+
+        chatContainer.style.display = 'flex';
+        
+        // Create a combined message container for user input
+        const userMessageContainer = document.createElement('div');
+        userMessageContainer.classList.add('user-message');
+
+        // Add text message if exists
+        if (message) {
+            const textDiv = document.createElement('div');
+            textDiv.textContent = message;
+            userMessageContainer.appendChild(textDiv);
+        }
+
+        // Add image if exists
+        if (currentImage) {
+            const img = document.createElement('img');
+            img.src = currentImage;
+            img.classList.add('max-w-full', 'h-auto', 'rounded-lg', 'mt-2');
+            userMessageContainer.appendChild(img);
+        }
+
+        // Add the combined message to chat
+        chatMessages.appendChild(userMessageContainer);
+        scrollChatToBottom();
+
+        // Add to history
+        if (message) {
+            addMessageToHistory(message, true, false);
+        }
+
+        // Clear input
+        userInput.value = '';
+        submitButton.style.display = 'none';
+        stopButton.style.display = 'inline-flex';
+
+        try {
+            // Get AI response
+            const aiResponse = await getAIResponse(message, currentImage);
+            
+            // Add AI response to chat
+            addMessage(aiResponse, false);
+            addMessageToHistory(aiResponse, false, false);
+
+            // Clear the image after successful analysis
+            if (currentImage) {
+                currentImage = null;
+                document.getElementById('imagePreviewContainer').classList.add('hidden');
+                document.getElementById('imageUpload').value = '';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            addMessage('Sorry, I encountered an error while processing your request.', false);
+            addMessageToHistory('Sorry, I encountered an error while processing your request.', false, false);
+        }
+
+        submitButton.style.display = 'inline-flex';
+        stopButton.style.display = 'none';
+    });
 </script>
 </html>
