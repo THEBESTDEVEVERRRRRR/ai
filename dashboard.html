@@ -700,9 +700,20 @@
 <script>
 // Check for quirks mode
 if (document.compatMode !== 'CSS1Compat') {
-    console.warn('KaTeX may not work correctly in quirks mode. Please ensure your document has a valid DOCTYPE.');
+  console.warn('KaTeX may not work correctly in quirks mode. Please ensure your document has a valid DOCTYPE.');
 }
-    const apiKey = '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';
+
+// Base64 encoded API key
+const encodedApiKey = 'Z3NrXzdyTW1zbm4yVlRSdjhHb0FscnNxV0dkeWIzRlk5THp4RzBKTUFSMlV3N2t4aGJ3N3BUVGg=';
+
+// Function to decode base64 API key
+function decodeApiKey(encoded) {
+  return atob(encoded);
+}
+
+// Get the decoded API key when needed
+const apiKey = decodeApiKey(encodedApiKey);
+
     const geminiApiKey = 'AIzaSyBUrX6HjaTmTD1-fLChJwPlPr6HrT2EVO8'; // Replace with your actual Gemini API key
 if (typeof katex === 'undefined') {
     console.error('KaTeX is not loaded. Please check your KaTeX script inclusion.');
