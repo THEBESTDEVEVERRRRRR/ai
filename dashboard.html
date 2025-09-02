@@ -610,7 +610,7 @@
                         </svg>
                     </button>
                     <div id="modelDropdown" class="hidden">
-                        <button class="model-option text-white block w-full text-left" data-value="qwen-qwq-32b">
+                        <button class="model-option text-white block w-full text-left" data-value="qwen/qwen3-32b">
                             <div class="flex items-center">
                                 <span class="flex-grow">TushAI T1 Reasoning</span>
                                 <i class="fas fa-check ml-2 hidden"></i>
@@ -820,7 +820,7 @@ if (typeof katex === 'undefined') {
     function updateSelectedModel() {
         // Update model text and badges
         switch (currentModel) {
-            case 'qwen-qwq-32b':
+            case 'qwen/qwen3-32b':
                 selectedModelText.textContent = 'TushAI T1 Reasoning';
                 hideAlphaWarning();
                 hideSearchBadge();
@@ -1053,7 +1053,7 @@ function hideImageWarning() {
             messageElement.textContent = content;
             chatMessages.appendChild(messageElement);
             scrollChatToBottom();
-        } else if (isThought && (currentModel === 'qwen-qwq-32b' || currentModel === 'gemini-2.5-pro-exp-03-25')) {
+        } else if (isThought && (currentModel === 'qwen/qwen3-32b' || currentModel === 'gemini-2.5-pro-exp-03-25')) {
             messageElement.classList.add('thought-message', 'thought-dropdown');
             messageElement.innerHTML = `
                 <div class="flex items-center">
@@ -1134,7 +1134,7 @@ function hideImageWarning() {
     }
     function parseResponse(content) {
         content = cleanupLatex(content);
-        if (currentModel === 'qwen-qwq-32b' || currentModel === 'gemini-2.5-pro-exp-03-25') {
+        if (currentModel === 'qwen/qwen3-32b' || currentModel === 'gemini-2.5-pro-exp-03-25') {
             const thinkRegex = /<think>([\s\S]*?)<\/think>/;
             const thinkMatch = content.match(thinkRegex);
 
@@ -1149,7 +1149,7 @@ function hideImageWarning() {
 
     function getSystemPrompt(model) {
         switch (model) {
-            case 'qwen-qwq-32b':
+            case 'qwen/qwen3-32b':
                 return 'You are a helpful assistant. Use Markdown formatting in your responses. Wrap your thinking process in <think> tags. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
             case 'meta-llama/llama-4-scout-17b-16e-instruct':
                 return 'You are a helpful assistant. Use Markdown formatting in your responses. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
@@ -1702,3 +1702,4 @@ async function getAIResponse(message, imageData = null) {
     });
 </script>
 </html>
+
