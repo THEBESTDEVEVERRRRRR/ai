@@ -86,6 +86,19 @@
             throw error;
         }
     }
+    async function initializeGroqApi() {
+        try {
+            const { Groq } = await import("https://esm.run/groq-sdk");
+            const groq = new Groq();
+            // Use the moonshotai/kimi-k2-instruct model
+            const model = groq.getModel({ model: "moonshotai/kimi-k2-instruct" });
+            console.log('Groq API initialized successfully for model: moonshotai/kimi-k2-instruct');
+            return model;
+        } catch (error) {
+            console.error('Failed to initialize Groq API:', error);
+            throw error;
+        }
+    }
 
 </script>
     <style>
@@ -338,7 +351,7 @@
         .thought-content {
             display: none;
         }
-        .model-select option[value="qwen-qwq-32b"] {
+        .model-select option[value="openai/gpt-oss-120b"] {
         outline: 2px solid red;
         background-color: rgba(255, 0, 0, 0.1);
     .fixed.top-4.left-4.right-4 {
@@ -604,29 +617,36 @@
                 <img src="logo.png" alt="TushAI Logo" class="h-10 mr-4">
                 <div class="model-select-container">
                     <button type="button" id="modelSelectButton" class="focus:outline-none">
-                        <span id="selectedModelText">TushAI T1 Reasoning</span>
+                        <span id="selectedModelText">TushAI T2 Ultra</span>
                         <svg class="fill-current h-4 w-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                             <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
                         </svg>
                     </button>
                     <div id="modelDropdown" class="hidden">
-                        <button class="model-option text-white block w-full text-left" data-value="qwen/qwen3-32b">
+                        <button class="model-option text-white block w-full text-left" data-value="openai/gpt-oss-120b">
                             <div class="flex items-center">
-                                <span class="flex-grow">TushAI T1 Reasoning</span>
+                                <span class="flex-grow">TushAI T2 Ultra</span>
                                 <i class="fas fa-check ml-2 hidden"></i>
                             </div>
-                            <p class="text-gray-400 text-xs mt-1">Advanced reasoning model with thought process</p>
+                            <p class="text-gray-400 text-xs mt-1">Advanced model with Internal reasoning and search enabled. Uses AISuperMind for enhanced context awareness.</p>
                         </button>
-                        <button class="model-option text-white block w-full text-left" data-value="meta-llama/llama-4-scout-17b-16e-instruct">
+                        <button class="model-option text-white block w-full text-left" data-value="openai/gpt-oss-20b">
                             <div class="flex items-center">
-                                <span class="flex-grow">TushAI T1</span>
+                                <span class="flex-grow">TushAI T2 Pro</span>
                                 <i class="fas fa-check ml-2 hidden"></i>
                             </div>
-                            <p class="text-gray-400 text-xs mt-1">Standard model without thought process</p>
+                            <p class="text-gray-400 text-xs mt-1">Standard model with Internal reasoning and search enabled.</p>
+                        </button>
+                        <button class="model-option text-white block w-full text-left" data-value="moonshotai/kimi-k2-instruct">
+                            <div class="flex items-center">
+                                <span class="flex-grow">TushAI T2</span>
+                                <i class="fas fa-check ml-2 hidden"></i>
+                            </div>
+                            <p class="text-gray-400 text-xs mt-1">Standard model</p>
                         </button>
                         <button class="model-option text-white block w-full text-left" data-value="meta-llama/llama-4-maverick-17b-128e-instruct">
                             <div class="flex items-center">
-                                <span class="flex-grow">TushAI T1 Vision</span>
+                                <span class="flex-grow">TushAI T1.1 Vision</span>
                                 <span class="bg-blue-500 text-xs px-2 py-0.5 rounded-full mr-2">BETA</span>
                                 <i class="fas fa-check ml-2 hidden"></i>
                             </div>
@@ -634,20 +654,11 @@
                         </button>
                         <button class="model-option text-white block w-full text-left" data-value="gemini-2.5-pro-exp-03-25">
                             <div class="flex items-center">
-                                <span class="flex-grow">TushAI T1.1</span>
+                                <span class="flex-grow">TushAI T1.1 Super</span>
                                 <span class="bg-blue-500 text-xs px-2 py-0.5 rounded-full mr-2">ALPHA</span>
                                 <i class="fas fa-check ml-2 hidden"></i>
                             </div>
-                            <p class="text-gray-400 text-xs mt-1">TushAI New Model In ALPHA</p>
-                        </button>
-                        <button class="model-option text-white block w-full text-left" data-value="gemini-2.0-flash">
-                            <div class="flex items-center">
-                                <span class="flex-grow">TushAI T1 Search</span>
-                                <span class="bg-green-500 text-xs px-2 py-0.5 rounded-full mr-2">SEARCH</span>
-                                <span class="bg-blue-500 text-xs px-2 py-0.5 rounded-full mr-2">BETA</span>
-                                <i class="fas fa-check ml-2 hidden"></i>
-                            </div>
-                            <p class="text-gray-400 text-xs mt-1">TushAI T1 with web search capabilities</p>
+                            <p class="text-gray-400 text-xs mt-1">TushAI Most Advanced Model In ALPHA</p>
                         </button>
                     </div>
                 </div>
@@ -703,16 +714,20 @@ if (document.compatMode !== 'CSS1Compat') {
   console.warn('KaTeX may not work correctly in quirks mode. Please ensure your document has a valid DOCTYPE.');
 }
 
-// Base64 encoded API key
-const encodedApiKey = 'Z3NrXzdyTW1zbm4yVlRSdjhHb0FscnNxV0dkeWIzRlk5THp4RzBKTUFSMlV3N2t4aGJ3N3BUVGg=';
-
-// Function to decode base64 API key
-function decodeApiKey(encoded) {
-  return atob(encoded);
+// Replace the existing API key block
+const encodedApiKeys = [
+  'Z3NrXzdyTW1zbm4yVlRSdjhHb0FscnNxV0dkeWIzRlk5THp4RzBKTUFSMlV3N2t4aGJ3N3BUVGg=', // original key
+  'Z3NrX21PVXhYMnFONEJ4WWlVbFpUYlhLV0dkeWIzRllQajBBSldyTmN1bmVvTllDckt0QlpiVWg=', // placeholder for second key
+  'Z3NrX1NlSDdEczBTbDBkZHlKQzJoV24yV0dkeWIzRllhOXFNNXRYbTV2M284azYwTVJJYWJLZkw=',
+  'Z3NrX2ZVMjFmSk9TR1ZPUXVRejAzaHBXV0dkeWIzRllqbkp4S0VpZ2NHc3BxN2pnZlgwbmp5aHo='
+];
+let currentApiKeyIndex = 0;
+function getApiKey() {
+  return atob(encodedApiKeys[currentApiKeyIndex]);
 }
-
-// Get the decoded API key when needed
-const apiKey = decodeApiKey(encodedApiKey);
+function rotateApiKey() {
+  currentApiKeyIndex = (currentApiKeyIndex + 1) % encodedApiKeys.length;
+}
 
     const geminiApiKey = 'AIzaSyBUrX6HjaTmTD1-fLChJwPlPr6HrT2EVO8'; // Replace with your actual Gemini API key
 if (typeof katex === 'undefined') {
@@ -731,7 +746,7 @@ if (typeof katex === 'undefined') {
     const modelDropdown = document.getElementById('modelDropdown');
     const selectedModelText = document.getElementById('selectedModelText');
     const modelOptions = document.querySelectorAll('.model-option');
-    let currentModel = 'qwen-qwq-32b';
+    let currentModel = 'openai/gpt-oss-120b';
     let chatHistory = [];
     let currentChatId = null;
 
@@ -820,14 +835,14 @@ if (typeof katex === 'undefined') {
     function updateSelectedModel() {
         // Update model text and badges
         switch (currentModel) {
-            case 'qwen/qwen3-32b':
-                selectedModelText.textContent = 'TushAI T1 Reasoning';
+            case 'openai/gpt-oss-120b':
+                selectedModelText.textContent = 'TushAI T2 Ultra';
                 hideAlphaWarning();
                 hideSearchBadge();
                 hideImageWarning()
                 break;
-            case 'meta-llama/llama-4-scout-17b-16e-instruct':
-                selectedModelText.textContent = 'TushAI T1';
+            case 'openai/gpt-oss-20b':
+                selectedModelText.textContent = 'TushAI T2 Pro';
                 hideAlphaWarning();
                 hideSearchBadge();
                 hideImageWarning()
@@ -839,15 +854,15 @@ if (typeof katex === 'undefined') {
                 showImageWarning()
                 break;
             case 'gemini-2.5-pro-exp-03-25':
-                selectedModelText.textContent = 'TushAI T1.1 (ALPHA)';
+                selectedModelText.textContent = 'TushAI T1.1 Super';
                 showAlphaWarning();
                 hideSearchBadge();
                 hideImageWarning()
                 break;
-            case 'gemini-2.0-flash':
-                selectedModelText.textContent = 'TushAI T1 Search';
+            case 'moonshotai/kimi-k2-instruct':
+                selectedModelText.textContent = 'TushAI T2';
                 hideAlphaWarning();
-                showSearchBadge();
+                hideSearchBadge();
                 hideImageWarning()
                 break;
         }
@@ -1053,7 +1068,7 @@ function hideImageWarning() {
             messageElement.textContent = content;
             chatMessages.appendChild(messageElement);
             scrollChatToBottom();
-        } else if (isThought && (currentModel === 'qwen/qwen3-32b' || currentModel === 'gemini-2.5-pro-exp-03-25')) {
+        } else if (isThought && (currentModel === 'openai/gpt-oss-120b' || currentModel === 'gemini-2.5-pro-exp-03-25')) {
             messageElement.classList.add('thought-message', 'thought-dropdown');
             messageElement.innerHTML = `
                 <div class="flex items-center">
@@ -1134,7 +1149,7 @@ function hideImageWarning() {
     }
     function parseResponse(content) {
         content = cleanupLatex(content);
-        if (currentModel === 'qwen/qwen3-32b' || currentModel === 'gemini-2.5-pro-exp-03-25') {
+        if (currentModel === 'openai/gpt-oss-120b' || currentModel === 'gemini-2.5-pro-exp-03-25') {
             const thinkRegex = /<think>([\s\S]*?)<\/think>/;
             const thinkMatch = content.match(thinkRegex);
 
@@ -1149,10 +1164,10 @@ function hideImageWarning() {
 
     function getSystemPrompt(model) {
         switch (model) {
-            case 'qwen/qwen3-32b':
-                return 'You are a helpful assistant. Use Markdown formatting in your responses. Wrap your thinking process in <think> tags. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
-            case 'meta-llama/llama-4-scout-17b-16e-instruct':
-                return 'You are a helpful assistant. Use Markdown formatting in your responses. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
+            case 'openai/gpt-oss-120b':
+                return 'You are a helpful assistant. Use Markdown formatting in your responses. Wrap your thinking process in <think> tags. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.  Search feature is enabled. Wrap your thinking process in <think> tags. Do not display any reference markers like "【1†L14-L18】" or its derivatives.';
+            case 'openai/gpt-oss-20b':
+                return 'You are a helpful assistant. Use Markdown formatting in your responses. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.  Search feature is enabled. Wrap your thinking process in <think> tags. Do not display any reference markers like "【1†L14-L18】" or its derivatives.';
             case 'meta-llama/llama-4-maverick-17b-128e-instruct':
                 return 'You are a helpful assistant. Use Markdown formatting in your responses. For any mathematical expressions, use KaTeX-compatible syntax with $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
             case 'gemini-2.5-pro-exp-03-25':
@@ -1334,11 +1349,13 @@ function hideImageWarning() {
                         'Authorization': `Bearer ${apiKey}`
                     },
                     body: JSON.stringify({
-                        model: 'meta-llama/llama-4-scout-17b-16e-instruct', // Fallback to a reliable model
+                        model: 'openai/gpt-oss-20b', // Fallback to a reliable model
+                        reasoning_effort: 'medium',
                         messages: [
-                            {role: 'system', content: getSystemPrompt('qwen-2.5-32b')},
-                            {role: 'user', content: userMessage}
-                        ]
+                            { role: 'system', content: getSystemPrompt('openai/gpt-oss-20b') },
+                            { role: 'user', content: userMessage }
+                        ],
+                        tools: [ { type: 'browser_search', browser_search: { enable_auto_search: true } } ]
                     }),
                     signal: signal
                 });
@@ -1366,10 +1383,12 @@ function hideImageWarning() {
                 },
                 body: JSON.stringify({
                     model: currentModel,
+                    reasoning_effort: 'medium',
                     messages: [
-                        {role: 'system', content: getSystemPrompt(currentModel)},
-                        {role: 'user', content: userMessage}
-                    ]
+                        { role: 'system', content: getSystemPrompt(currentModel) },
+                        { role: 'user', content: userMessage }
+                    ],
+                    tools: (currentModel === 'openai/gpt-oss-120b' || currentModel === 'openai/gpt-oss-20b') ? [ { type: 'browser_search', browser_search: { enable_auto_search: true } } ] : undefined
                 }),
                 signal: signal
             });
@@ -1403,6 +1422,11 @@ function hideImageWarning() {
     } catch (error) {
         console.error('Error:', error);
         typingIndicator.remove();
+        if (error.message.includes('429') || error.message.includes('Rate limit')) {
+            rotateApiKey();
+            addMessage('Rate limit reached. Rotating API key, please try again.');
+            return;
+        }
         if (error.name === 'AbortError') {
             addMessage('AI response was stopped.');
         } else {

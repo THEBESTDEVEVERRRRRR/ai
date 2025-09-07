@@ -264,7 +264,7 @@
     .thought-content {
       display: none;
     }
-    .model-select option[value="qwen-qwq-32b"] {
+    .model-select option[value="openai/gpt-oss-20b"] {
       outline: 2px solid red;
       background-color: rgba(255, 0, 0, 0.1);
       .fixed.top-4.left-4.right-4 {
@@ -491,32 +491,25 @@
       </a>
       <div class="model-select-container">
         <button type="button" id="modelSelectButton" class="focus:outline-none">
-          <span id="selectedModelText">TushAI T1 Reasoning</span>
+          <span id="selectedModelText">TushAI T2 Pro</span>
           <svg class="fill-current h-4 w-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
             <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
           </svg>
         </button>
         <div id="modelDropdown" class="hidden">
-          <button class="model-option text-white block w-full text-left" data-value="qwen-qwq-32b">
+          <button class="model-option text-white block w-full text-left" data-value="openai/gpt-oss-20b">
             <div class="flex items-center">
-              <span class="flex-grow">TushAI T1 Reasoning</span>
+              <span class="flex-grow">TushAI T2 Pro</span>
               <i class="fas fa-check ml-2 hidden"></i>
             </div>
-            <p class="text-gray-400 text-xs mt-1">Advanced reasoning model with thought process</p>
+            <p class="text-gray-400 text-xs mt-1">Standard model with Internal reasoning and search enabled.</p>
           </button>
-          <button class="model-option text-white block w-full text-left" data-value="meta-llama/llama-4-scout-17b-16e-instruct">
+          <button class="model-option text-white block w-full text-left" data-value="moonshotai/kimi-k2-instruct">
             <div class="flex items-center">
-              <span class="flex-grow">TushAI T1</span>
+              <span class="flex-grow">TushAI T2</span>
               <i class="fas fa-check ml-2 hidden"></i>
             </div>
-            <p class="text-gray-400 text-xs mt-1">Standard model without thought process</p>
-          </button>
-          <button class="model-option text-white block w-full text-left" data-value="meta-llama/llama-4-maverick-17b-128e-instruct">
-            <div class="flex items-center">
-              <span class="flex-grow">TushAI T1 Coder</span>
-              <i class="fas fa-check ml-2 hidden"></i>
-            </div>
-            <p class="text-gray-400 text-xs mt-1">Specialized model for coding tasks</p>
+            <p class="text-gray-400 text-xs mt-1">Standard model</p>
           </button>
         </div>
       </div>
@@ -590,7 +583,7 @@
   const modelDropdown = document.getElementById('modelDropdown');
   const selectedModelText = document.getElementById('selectedModelText');
   const modelOptions = document.querySelectorAll('.model-option');
-  let currentModel = 'qwen-qwq-32b';
+  let currentModel = 'openai/gpt-oss-20b';
   let chatHistory = [];
   let currentChatId = null;
 
@@ -676,14 +669,11 @@
   }
   function updateSelectedModel() {
     switch (currentModel) {
-      case 'qwen-qwq-32b':
-        selectedModelText.textContent = 'TushAI T1 Reasoning';
+      case 'openai/gpt-oss-20b':
+        selectedModelText.textContent = 'TushAI T2 Pro';
         break;
-      case 'meta-llama/llama-4-scout-17b-16e-instruct':
-        selectedModelText.textContent = 'TushAI T1';
-        break;
-      case 'meta-llama/llama-4-maverick-17b-128e-instruct':
-        selectedModelText.textContent = 'TushAI T1 Coder';
+      case 'moonshotai/kimi-k2-instruct':
+        selectedModelText.textContent = 'TushAI T2';
         break;
     }
     modelOptions.forEach(option => {
@@ -787,7 +777,7 @@
       messageElement.textContent = content;
       chatMessages.appendChild(messageElement);
       scrollChatToBottom();
-    } else if (isThought && currentModel === 'qwen-qwq-32b') {
+    } else if (isThought && currentModel === 'openai/gpt-oss-20b') {
       messageElement.classList.add('thought-message', 'thought-dropdown');
       messageElement.innerHTML = `
                 <div class="flex items-center">
@@ -869,7 +859,7 @@
   }
   function parseResponse(content) {
     content = cleanupLatex(content);
-    if (currentModel === 'qwen-qwq-32b') {
+    if (currentModel === 'openai/gpt-oss-20b') {
       const thinkRegex = /<think>([\s\S]*?)<\/think>/;
       const thinkMatch = content.match(thinkRegex);
 
@@ -884,12 +874,10 @@
 
   function getSystemPrompt(model) {
     switch (model) {
-      case 'qwen-qwq-32b':
-        return 'You are a helpful assistant. Use Markdown formatting in your responses. Wrap your thinking process in <think> tags. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
-      case 'meta-llama/llama-4-scout-17b-16e-instruct':
-        return 'You are a helpful assistant. Use Markdown formatting in your responses. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Avoid using \\begin{align*} and \\end{align*}; instead, use $...$ for multi-line equations.';
-      case 'meta-llama/llama-4-maverick-17b-128e-instruct':
-        return 'You are a helpful coding assistant. Provide clear and concise code explanations and solutions. Use Markdown formatting for code blocks and syntax highlighting. For any mathematical expressions, use KaTeX-compatible syntax with $...$ for inline math and $...$ for display math.';
+      case 'openai/gpt-oss-20b':
+        return 'You are a helpful assistant. Use Markdown formatting in your responses. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math. Search feature is enabled. Wrap your thinking process in <think> tags. Do not display any reference markers like "【1†L14-L18】" or its derivatives.';
+      case 'moonshotai/kimi-k2-instruct':
+        return 'You are a helpful assistant. Use Markdown formatting in your responses. For all mathematical expressions, use KaTeX-compatible syntax. Use $...$ for inline math and $...$ for display math.';
       default:
         return 'You are a helpful assistant.';
     }
@@ -928,19 +916,25 @@
     try {
       controller = new AbortController();
       const signal = controller.signal;
+      const payload = {
+        model: currentModel,
+        messages: [
+          { role: 'system', content: getSystemPrompt(currentModel) },
+          { role: 'user', content: userMessage }
+        ]
+      };
+      if (currentModel === 'openai/gpt-oss-20b') {
+        payload.tools = [
+          { type: "browser_search", enabled: true }
+        ];
+      }
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${apiKey}`
         },
-        body: JSON.stringify({
-          model: currentModel,
-          messages: [
-            { role: 'system', content: getSystemPrompt(currentModel) },
-            { role: 'user', content: userMessage }
-          ]
-        }),
+        body: JSON.stringify(payload),
         signal: signal
       });
 
