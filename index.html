@@ -33,6 +33,33 @@
             }
             // If not signed in, the page will continue loading normally
         });
+
+        // Payment modal functions
+        function showPaymentModal() {
+            document.getElementById('paymentModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hidePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function selectCreditCard() {
+            window.location.href = 'payment.html';
+        }
+
+        function selectExternal() {
+            window.location.href = 'https://bank.tush.my.id/pages/payment?code=MzYzNjM2&amount=NQ==&url=aHR0cHM6Ly9haS50dXNoLm15LmlkL3NpZ251cA==';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('paymentModal');
+            if (event.target == modal) {
+                hidePaymentModal();
+            }
+        }
     </script>
     <style>
         html{
@@ -51,6 +78,39 @@
     </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen">
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-gray-800 rounded-xl p-8 max-w-md w-full mx-4 relative">
+            <button onclick="hidePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <div class="text-center mb-6">
+                <div class="text-blue-400 mb-4">
+                    <i class="fas fa-credit-card text-4xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">Choose Payment Method</h3>
+                <p class="text-gray-400">Select your preferred payment option for the Pro plan</p>
+            </div>
+
+            <div class="space-y-4">
+                <button onclick="selectCreditCard()" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg font-medium transition duration-300 flex items-center justify-center">
+                    <i class="fas fa-credit-card mr-3"></i>
+                    Credit Card Payment
+                </button>
+                
+                <button onclick="selectExternal()" class="w-full bg-gray-700 hover:bg-gray-600 text-white p-4 rounded-lg font-medium transition duration-300 flex items-center justify-center">
+                    <i class="fas fa-university mr-3"></i>
+                    External Payment
+                </button>
+            </div>
+
+            <div class="mt-6 text-center text-sm text-gray-400">
+                <p>Both options are secure and encrypted</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="fixed w-full top-0 z-50 bg-gray-900 bg-opacity-90 backdrop-blur-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -213,7 +273,7 @@
                             <i class="fas fa-check text-green-500 mr-3"></i> Priority support
                         </p>
                     </div>
-                    <a href="payment.html" class="block w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md font-medium text-center transition">Get Started</a>
+                    <a href="#" onclick="showPaymentModal()" class="block w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md font-medium text-center transition">Get Started</a>
                 </div>
             </div>
 
@@ -323,5 +383,5 @@
             </div>
         </div>
     </footer>
-                            </body>
-                            </html>
+</body>
+</html>
